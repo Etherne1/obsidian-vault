@@ -11,14 +11,13 @@
             "id": "f29cead5d9305e31",
             "type": "leaf",
             "state": {
-              "type": "markdown",
+              "type": "bases",
               "state": {
-                "file": "Welcome.md",
-                "mode": "source",
-                "source": false
+                "file": "Untitled/Untitled.base",
+                "viewName": "Table"
               },
-              "icon": "lucide-file",
-              "title": "Welcome"
+              "icon": "lucide-table",
+              "title": "Untitled"
             }
           }
         ]
@@ -191,8 +190,10 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "09a3651b58f908a4",
+  "active": "ac406a79a451571c",
   "lastOpenFiles": [
+    "Perp",
+    "Welcome.md",
     "ssh_git.pub",
     "ssh_git",
     "ssh_for_git.pub",
@@ -207,14 +208,12 @@
     "https:/github.com/Etherne1/otus_network_engineer/Lab04/readme.md",
     "https:/github.com/Etherne1/otus_network_engineer/Lab04",
     "https:/github.com/Etherne1/otus_network_engineer/Lab03/configs/Switch2_startup-config.txt",
-    "https:/github.com/Etherne1/otus_network_engineer/Lab03/configs/Switch1_startup-config.txt",
     "https:/github.com/Etherne1/otus_network_engineer/Lab03/readme.md",
     "https:/github.com/Etherne1/otus_network_engineer/Lab03/Pasted image 20241020152404.png",
     "https:/github.com/Etherne1/otus_network_engineer/Lab03/Pasted image 20241020151723.png",
     "https:/github.com/Etherne1/otus_network_engineer/Lab03.5/readme.md",
     "https:/github.com/Etherne1/otus_network_engineer/Lab02/readme.md",
     "https:/github.com/Etherne1/otus_network_engineer/Lab02/Screenshot 2024-10-13 194113.png",
-    "https:/github.com/Etherne1/otus_network_engineer/2024-12-22.md",
-    "Welcome.md"
+    "https:/github.com/Etherne1/otus_network_engineer/2024-12-22.md"
   ]
 }
