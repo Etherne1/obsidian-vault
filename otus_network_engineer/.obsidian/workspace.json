@@ -1,0 +1,257 @@
+{
+  "main": {
+    "id": "17bc14542729ea79",
+    "type": "split",
+    "children": [
+      {
+        "id": "ff4b359365144089",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "547175f278459a23",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Lab04/readme.md",
+                "mode": "source",
+                "source": true
+              },
+              "icon": "lucide-file",
+              "title": "readme"
+            }
+          }
+        ]
+      },
+      {
+        "id": "5749d4e443247ebf",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "37f024faa1176412",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Lab04/readme.md",
+                "mode": "preview",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "readme"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "72585c3a10a6215c",
+    "type": "split",
+    "children": [
+      {
+        "id": "dfa0bc4e0408c3cb",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "13e6a04c10c5c8c8",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Files"
+            }
+          },
+          {
+            "id": "d1ecd303095cb569",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Search"
+            }
+          },
+          {
+            "id": "fe0fa3712ffeed2e",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Bookmarks"
+            }
+          },
+          {
+            "id": "7c321af15b5505bd",
+            "type": "leaf",
+            "state": {
+              "type": "file-tree-view",
+              "state": {},
+              "icon": "sheets-in-box",
+              "title": "File Tree"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 240.5
+  },
+  "right": {
+    "id": "dbc2ca1e0711e896",
+    "type": "split",
+    "children": [
+      {
+        "id": "7e26b12c47926a4b",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "ace8f10e3ab5a15a",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "Lab03/readme.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Backlinks for readme"
+            }
+          },
+          {
+            "id": "ef8e09857fbc08a7",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "Lab03/readme.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Outgoing links from readme"
+            }
+          },
+          {
+            "id": "d053314420fba646",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true
+              },
+              "icon": "lucide-tags",
+              "title": "Tags"
+            }
+          },
+          {
+            "id": "f90100f09aad3347",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "Lab03/readme.md"
+              },
+              "icon": "lucide-list",
+              "title": "Outline of readme"
+            }
+          },
+          {
+            "id": "ac338354e85dede7",
+            "type": "leaf",
+            "state": {
+              "type": "git-view",
+              "state": {},
+              "icon": "git-pull-request",
+              "title": "Source Control"
+            }
+          },
+          {
+            "id": "ad8ff6a0807ba71c",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "All properties"
+            }
+          }
+        ],
+        "currentTab": 4
+      }
+    ],
+    "direction": "horizontal",
+    "width": 200
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false,
+      "obsidian-git:Open Git source control": false,
+      "file-tree-alternative:File Tree Alternative Plugin": false
+    }
+  },
+  "active": "ac338354e85dede7",
+  "lastOpenFiles": [
+    "~$rm.docx",
+    "2F56F100",
+    "~$rm.xlsx",
+    "~WRL0001.tmp",
+    "~WRD0000.tmp",
+    "7245F100",
+    "8820F100",
+    "rm.docx",
+    "rm.xlsx",
+    "Lab04/~$rm.xlsx",
+    "README.md",
+    "Lab04/readme.md",
+    "Lab03.5/readme.md",
+    "2024-12-22.md",
+    "Untitled.md",
+    "readme.md.md",
+    "Lab04/AC7BE100",
+    "Lab03/readme.md",
+    "Lab03/Pasted image 20241020152404.png",
+    "Untitled.canvas",
+    "Lab02/readme.md",
+    "Lab01/Readme.md",
+    "Lab03/Pasted image 20241020151723.png",
+    "conflict-files-obsidian-git.md",
+    "Pasted image 20241020152404.png",
+    "Pasted image 20241020151903.png",
+    "Pasted image 20241020151753.png",
+    "Pasted image 20241020151723.png",
+    "Lab02/readmy.md",
+    "Lab02/Screenshot 2024-10-13 194113.png",
+    "Lab01/Pasted image 20241010212925.png",
+    "Pasted image 20241010212925.png",
+    "2024-10-10.md"
+  ]
+}
