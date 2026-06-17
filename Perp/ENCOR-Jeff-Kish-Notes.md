@@ -233,6 +233,19 @@
 16. Policing vs shaping? → Policing drops/remarks excess; shaping buffers and delays excess.
 17. Which IGMP message reports source-specific group membership? → IGMPv3 membership report with source filter (INCLUDE/EXCLUDE).
 
+### Deep Dive — QoS
+
+QoS on Catalyst and IOS-XE platforms is built around the **MQC (Modular QoS CLI)** pipeline: `class-map` matches traffic (ACL, DSCP, NBAR, protocol), `policy-map` defines what to do (set/mark, police, shape, queue), and `service-policy` attaches the policy to an interface direction. Understand the three QoS models conceptually: **Best-Effort** (no QoS), **IntServ** (per-flow reservation via RSVP — rarely deployed), and **DiffServ** (per-hop behavior driven by DSCP markings — the dominant model in enterprise and SP networks today).
+
+Key behavioral distinctions to nail down:
+- **Classify and mark at the edge / trust boundary.** Trust CoS/DSCP from an IP phone via `mls qos trust device cisco-phone` or `auto qos voip cisco-phone`, but never trust DSCP arriving from an untrusted user port. Once marked, transit devices act on the existing marking — re-marking in the core is an anti-pattern.
+- **Queuing on egress only.** Congestion management (LLQ for voice/video, CBWFQ for data, WRED to avoid TCP global sync) all happen on the egress queue when the interface is congested. Ingress policing/marking is separate from egress queuing.
+- **Policing vs shaping.** Policing is a token-bucket that drops or remarks excess immediately (used at SP edges, customer-handoffs). Shaping buffers excess into a queue and smooths bursts — used on subrate WAN links where the carrier polices on the other side.
+- **Per-hop behaviors (PHB):** EF (46) = voice, AF4x = interactive video, AF3x = signaling/streaming video, AF2x/AF1x = transactional/bulk data, CS6/CS7 = network control. Memorize the EF/AF mapping table from OCG Ch. 14.
+- **AutoQoS** generates a complete MQC config for common roles (`auto qos voip trust`, `auto qos voip cisco-phone`, `auto qos voip cisco-softphone`) — read the generated config to learn the building blocks.
+
+**Lab reinforcement.** There is no dedicated full QoS lab in `ENCOR-Labs-EVE-NG.md` because vIOS in EVE-NG implements only a subset of MQC features (no real congestion to police against). Instead, drive QoS practice through **CLI Drills 30/31 (multicast PHB context)** and the **Week 6 commands** in `ENCOR-Study-Plan.md`: build a class-map/policy-map/service-policy chain on a CSR1000v, apply it to a Gi interface, and validate with `show policy-map interface Gi0/1`, `show class-map`, and `show mls qos` (on physical-equivalent platforms). Pair the lab work with OCG Ch. 14 and Jeff Kish's QoS skill section for conceptual grounding.
+
 ---
 
 ## Week 7 — IP Services
@@ -324,6 +337,20 @@
 12. Which standard combines 802.11k/v/r for client-assisted roaming? → 802.11r/k/v together (sometimes called "K-V-R").
 13. Catalyst 9800-CL is which deployment? → Cloud / virtual WLC running on KVM, ESXi, AWS, etc.
 
+### Deep Dive — Wireless
+
+Wireless is the ENCOR domain that **least translates to vIOS labs**, so your reinforcement strategy must lean on real WLC UIs and packet captures rather than CLI alone. Three pillars to internalize:
+
+1. **AP-to-WLC control plane (CAPWAP).** A lightweight AP boots, runs through DHCP/DNS/Option-43/broadcast to discover candidate WLCs, sends a CAPWAP Discovery Request, picks a WLC based on priority/load, and joins via DTLS-encrypted control (UDP 5246) + data (UDP 5247, optionally DTLS). Memorize the discovery order: **Primed (priming) → DHCP Option 43 → DNS CISCO-CAPWAP-CONTROLLER → Broadcast → Multicast**. The Join phase exchanges certificates (MIC or LSC) — this is where AP/WLC version mismatches surface.
+
+2. **AP modes and FlexConnect.** Local mode = traffic tunneled back to WLC (centralized). FlexConnect = traffic switched locally at the branch when WAN is healthy, falls back to WLC for auth (Connected vs Standalone state). Other modes: **Monitor** (no client traffic, RF scanning only), **Sniffer** (sends 802.11 frames to a remote sniffer), **Rogue Detector** (wired-side rogue MAC matching), **Bridge/Mesh** (MAP/RAP for outdoor backhaul), **SE-Connect** (Spectrum Expert mode).
+
+3. **Roaming and security.** L2 roam = same VLAN, just re-associates. L3 roam = different VLAN/subnet — handled via **anchor/foreign** mobility tunnels so client keeps its IP. 802.11r (FT) = fast BSS transition (sub-50ms handoff), 802.11k = neighbor list, 802.11v = BSS transition mgmt — together they enable fast roaming. WPA3 supersedes WPA2 with SAE (Simultaneous Authentication of Equals) replacing PSK 4-way handshake vulnerabilities, and OWE for open networks.
+
+**Wi-Fi 6 (802.11ax) essentials:** OFDMA (subcarrier-level multiplexing — multiple clients per TXOP), MU-MIMO uplink + downlink, 1024-QAM, BSS coloring (spatial reuse via per-BSS color tag), Target Wake Time (battery savings on IoT). Wi-Fi 6E adds the 6 GHz band (no DFS, no legacy clients).
+
+**Lab reinforcement.** EVE-NG with vIOS gives you nothing for wireless — the supported approach is the **Cisco DevNet [Catalyst 9800 Always-On sandbox](https://devnetsandbox.cisco.com/)** (no reservation, read-only credentials for `sandbox.cisco.com` / `Catalyst 9800-CL`). Walk the GUI: Configuration → Tags & Profiles → Policy/Site/RF, build a WLAN, attach a policy profile, view AP join state under Monitoring. Optionally, if you have the qcow2, add **Catalyst 9800-CL** to EVE-NG (resource-heavy: 4 vCPU / 8 GB RAM) and attach a simulated AP. Pair this with OCG Ch. 4 (Wireless Signals), Ch. 5 (Wireless Infrastructure), Ch. 6 (Understanding Wireless Roaming), and Jeff Kish's wireless skill section for conceptual depth. CLI drill mapping: drills 32–36 (services) touch peripheral wireless infra (DHCP, NTP, AAA) that WLCs depend on.
+
 ---
 
 ## Week 10 — Architecture, SD-Access, SD-WAN
@@ -360,6 +387,22 @@
 10. cEdge vs vEdge — main difference? → cEdge runs IOS-XE; vEdge runs Viptela OS.
 11. SD-Access policy plane for segmentation? → Cisco TrustSec SGTs + SGACL (Group-Based Access Control).
 12. DNA Center's role in SD-Access? → Centralized provisioning, automation, assurance, and policy admin.
+
+### Deep Dive — SD-Access & SD-WAN
+
+Both fabrics share the same conceptual blueprint — **separate planes for control, data, and management** — but solve different problems and live in different parts of the network.
+
+**SD-Access (campus fabric).** The data plane is **VXLAN** (UDP 4789) with a Group Policy Object (GPO) header that carries the SGT for TrustSec. The control plane is **LISP** — endpoints (EIDs) are registered with a **Control Plane Node** that holds the EID-to-RLOC mapping table; edge nodes query the CPN on demand instead of running a full IGP across the overlay. The **underlay** is a routed fabric (IS-IS is the Cisco best practice — fewer LSPs, vendor-friendly, decoupled from IP-based control). **Roles:** Edge node (host-facing, anycast SVI for endpoints), Border node (gateway out of fabric — internal, external, anywhere), Control Plane node (LISP mapping db), Fabric WLC (registers wireless EIDs into fabric), Fabric AP (CAPWAP to WLC, VXLAN to edge node). **Policy plane** = TrustSec SGT/SGACL provisioned by ISE; **management plane** = DNA Center for automation, assurance, AI/ML analytics.
+
+**SD-WAN (Catalyst SD-WAN, formerly Viptela).** Four planes: **Orchestration** (vBond — initial authentication and NAT traversal), **Management** (vManage — GUI, REST API, templates, monitoring), **Control** (vSmart — runs OMP, distributes routes/policy/keys), **Data** (vEdge/cEdge routers). Routers use **OMP (Overlay Management Protocol)** over DTLS/TLS to vSmart, exchanging three route types: **OMP routes** (prefix + next-hop attributes), **TLOC routes** (transport location: system-IP + color + encapsulation), **Service routes** (firewall/IPS chain insertion). Data plane = IPsec tunnels between TLOCs with ESP-encapsulated GRE or IPsec. **cEdge** runs IOS-XE (the Cisco-acquired path); **vEdge** runs Viptela OS (legacy).
+
+**Why both matter for ENCOR.** The blueprint v1.2 explicitly renamed Cisco SD-WAN to **Catalyst SD-WAN** and tightened SD-Access terminology — expect questions on plane separation, OMP route types, fabric roles, and the LISP-vs-VXLAN split (LISP = control, VXLAN = data).
+
+**Lab reinforcement.** Direct fabric labs are not feasible in EVE-NG without licensed images, but conceptual labs cover the building blocks:
+- **Lab A2 (SD-Access Underlay/Overlay Concept Lab)** — build the IS-IS underlay, simulate a VXLAN overlay tunnel between two CSR1000v acting as edge nodes, and walk through what a real edge/border/CP would do.
+- **Lab V3 (VXLAN Flood-and-Learn)** — gives you a working VXLAN data plane with multicast underlay, the exact encapsulation SD-Access uses.
+- For SD-WAN, use the **Cisco DevNet Catalyst SD-WAN sandbox** (vManage/vBond/vSmart preprovisioned) — no EVE-NG equivalent exists for the full stack.
+- CLI Drills 37–40 reinforce overlay encapsulation patterns (GRE, mGRE/DMVPN, VXLAN) that underpin both fabrics.
 
 ---
 
@@ -473,6 +516,33 @@
 13. Idempotent — define it in automation context. → A task that, when run multiple times, produces the same end state with no additional changes after the first successful run.
 14. YANG-push subscription pushing on data change is which type? → on-change subscription.
 15. Difference between gNMI and NETCONF? → gNMI uses gRPC + Protobuf, faster and binary; NETCONF uses SSH + XML.
+
+### Deep Dive — Automation & Programmability
+
+Automation on ENCOR is graded on **mechanisms** (how the device exposes config/state) and **consumers** (the tools and languages that operate on those mechanisms). Hold the mental model: at the bottom you have the device's data store; on top of the data store sit RPC/transport protocols; clients talk to those protocols using data-format payloads encoded against models.
+
+**Mechanisms — know the matrix:**
+- **NETCONF** — SSH (port 830) + XML payloads + RPC verbs (`get`, `get-config`, `edit-config`, `commit`, `lock`/`unlock`). Three datastores: `running`, `candidate`, `startup`. Native to IOS-XE/NX-OS/IOS-XR. Enable: `netconf-yang`.
+- **RESTCONF** — HTTP(S) (port 443) + JSON or XML + REST verbs (GET/POST/PUT/PATCH/DELETE). Stateless, no candidate datastore — every write hits `running`. Enable: `restconf` + `ip http secure-server`.
+- **gNMI** — gRPC (HTTP/2, port 50051 typical) + Protocol Buffers (binary). Built for streaming telemetry; subscriptions can be **ON_CHANGE**, **SAMPLE** (periodic), or **TARGET_DEFINED**.
+- **Model-driven telemetry (MDT)** — push-based replacement for SNMP polling: device streams operational state at configured intervals to a collector (Pipeline, Telegraf, Grafana). Dial-out (device → collector) and dial-in (collector subscribes) modes.
+- **EEM (Embedded Event Manager)** — local automation on the device itself: an *event detector* (syslog regex, SNMP trap, timer, CLI pattern) fires an *applet* or Tcl policy that runs CLI actions. Pure on-box, no controller required.
+
+**YANG models** are the schema that ties everything together. **OpenConfig** = vendor-neutral models (`openconfig-interfaces`, `openconfig-bgp`); **IETF** = standards-track (`ietf-interfaces`); **Native** = vendor-specific full-coverage (`Cisco-IOS-XE-native`). Tools: `pyang` to lint/visualize models, `ncclient` (Python) for NETCONF, `requests` for RESTCONF, `gNMIc` or `cisco-gnmi-python` for gNMI.
+
+**Consumers — know the tool roles:**
+- **Python** — `ncclient`, `requests`, `paramiko`, `netmiko` (CLI-over-SSH abstraction), `nornir` (inventory + parallel execution framework).
+- **Ansible** — agentless, YAML playbooks, idempotent modules (`cisco.ios.ios_config`, `ansible.netcommon.netconf_config`). Inventory in INI/YAML, variables in `group_vars`/`host_vars`.
+- **Postman / curl** — quick RESTCONF exploration.
+- **JSON vs XML vs YAML vs Protobuf** — be able to identify each on sight: JSON `{}` k/v, XML `<tags>`, YAML indented k/v, Protobuf binary.
+
+**Lab reinforcement.** Walk the full automation stack via the existing labs:
+- **Lab AU1 (NETCONF/RESTCONF on CSR1000v)** — enable `netconf-yang`/`restconf`, run a `get-config` via ncclient and a GET via curl, edit an interface via `edit-config`, validate with `show running-config`.
+- **Lab AU2 (Ansible against CSR/vIOS)** — write a playbook that pushes a loopback and configures OSPF on three CSRs in parallel using `cisco.ios.ios_config`.
+- **Lab AU3 (EEM applet)** — write an EEM applet that catches a `%OSPF-5-ADJCHG` syslog and emails/logs the event; trigger by bouncing an OSPF neighbor.
+- **CLI Drills 55–60** map directly to these labs: enabling NETCONF/RESTCONF (55), curl/ncclient examples (56–57), an Ansible playbook skeleton (58), an EEM applet (59), and a model-driven telemetry subscription config (60).
+
+Pair the labs with OCG Ch. 28 (Foundational Network Programmability Concepts) and Ch. 29 (Network Automation Tools), plus Jeff Kish's automation skill section.
 
 ---
 
