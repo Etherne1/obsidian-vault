@@ -1,236 +1,312 @@
-# External Labs Map — NetworkLessons / containerlab
+# External Labs Map — NetworkLessons / GNS3vault Archive
 
-**Source:** [networklessons/labs](https://github.com/networklessons/labs) — containerlab labs by René Molenaar (NetworkLessons.com).
+**Source:** [networklessons/labs](https://github.com/networklessons/labs) — combined repo containing two collections:
 
-**Why this file exists:** The hand-written labs in `ENCOR-Labs-EVE-NG.md` are good for modern IOS-XE features (NETCONF, RESTCONF, EEM, telemetry, VXLAN, LISP) but I have made placement mistakes in classic L2/L3 protocol labs (Lab I1 took multiple iterations). For OSPF / BGP / EIGRP / IS-IS / MPLS / HSRP / VXLAN, this external repo gives you **pre-validated, modern, vendor-correct topologies**. We use them for the protocol fundamentals and reserve hand-written labs for the modern/automation gap.
+1. **`gns3vault-archive/`** — René Molenaar's classic GNS3vault labs, retired from gns3vault.com and archived here. **Each lab has a full scenario, goal/task list, topology diagram, starter configs, final solution configs, and a YouTube video walkthrough.** ~291 labs.
+2. **`containerlab/labs/`** — Modern containerlab topologies with startup configs but **no description, no task list, no goals**. ~78 labs.
 
-**Validation status:** The NetworkLessons repo is actively maintained (2024+), uses real Cisco IOL 17.12.01 (IOS-XE codebase, same as your CSR1000v 17.3.04a — almost identical CLI), and is built by René Molenaar, who has been writing CCIE labs for ~15 years. Treat configs in this repo as ground truth; if my hand-written lab and the external lab disagree, trust the external one.
+**Correction from my earlier mapping:** I pointed you at containerlab first, which is what most people will see when they look at the repo, but those are *topology files only* — no learning material. The **`gns3vault-archive/` is the actually useful collection** for self-study. Use that.
+
+**Validation status:** GNS3vault labs were written by René Molenaar for the gns3vault.com community over ~10 years (2008–2018). They have been used by thousands of CCNP/CCIE candidates. Treat them as ground truth. Configs use older IOS versions (12.4 / 15.x) but the protocol mechanics are identical to what your CSR1000v 17.3.04a runs.
+
+---
+
+## How each GNS3vault lab is structured
+
+Open any lab folder, e.g. [OSPF / ospf-authentication](https://github.com/networklessons/labs/tree/main/gns3vault-archive/OSPF/ospf-authentication). You will see:
+
+| File | What it is |
+|---|---|
+| `<lab-name>.md` | **The lab document.** Scenario (story setup), Goal (numbered task list), Additional information, IOS image used, YouTube link. **This is what you were looking for.** |
+| `topology-<lab-name>.png` | Topology diagram. |
+| `<Lab Name>.gns3` | Native GNS3 project file (you can ignore — for users running GNS3). |
+| `startup-configs/` | Starter configs per router (interfaces, IPs preconfigured — you do the protocol work). |
+| `final-configs/` | The solution. Open *only* after attempting the lab. |
+| `containerlab/` | Containerlab version of the topology. Ignore for EVE-NG. |
+
+**Lab workflow:**
+1. Read `<lab-name>.md` — understand the scenario and the task list.
+2. Build the topology in EVE-NG matching the PNG.
+3. Apply each router's `startup-configs/R<N>.txt` to give yourself the same starting point.
+4. Do the tasks listed in the goal section. Don't look at final-configs.
+5. Verify with the YouTube video walkthrough — the link in the .md file.
+6. Only if stuck, peek at `final-configs/R<N>.txt`.
 
 ---
 
 ## Platform translation
 
-| External lab uses | Your image | Notes |
-|---|---|---|
-| `cisco_iol:17.12.01` (Cisco IOS-XE on Linux) | **CSR1000v 17.3.04a** | Same OS family. Configs paste in nearly verbatim. Differences: `Ethernet0/1` → `GigabitEthernet1` on CSR; some `show platform` output differs (harmless for exam). |
-| `arista_ceos`, `frr`, `fortinet`, `vyos` | **Skip** for ENCOR | Use only if you want a vendor-comparison side lab; not required for the exam. |
-| Cisco NX-OS containers (VXLAN labs) | **Adapt** to CSR1000v | NX-OS VXLAN syntax differs from IOS-XE. I'll rewrite these to IOS-XE for you when you reach them. |
-| Cisco ASA | **Skip** for ENCOR | ASA is CCNP Security territory, not ENCOR. |
-| ONOS, OpenDaylight | **Skip** | Conceptually interesting but outside ENCOR blueprint. |
+GNS3vault labs assume Cisco 3640/3725/7200 routers with IOS 12.4 or 15.x. Your CSR1000v 17.3.04a is newer but the CLI is upward-compatible for all ENCOR-relevant features. Specifically:
 
-**How to use a containerlab lab without containerlab:**
-1. Open the lab's `*.clab.yml` to see the topology (nodes + links).
-2. Open each node's `startup-config.cfg.partial` — that's the Cisco config to paste into your CSR1000v on EVE-NG.
-3. Wire your EVE-NG nodes to match the YAML `links:` section.
-4. Paste each config into the matching node, then verify with the lab's `show` commands (usually documented in the matching NetworkLessons.com article — the lab folder name maps to an article URL like `https://networklessons.com/cisco/ccnp-encor/<lab-name>`).
+| GNS3vault uses | Your image | Difference |
+|---|---|---|
+| `c3640-jk9s-mz` / `c3725-adventerprisek9-mz` / `c7200-adventerprisek9-mz` | **CSR1000v 17.3.04a** | Newer IOS-XE. All OSPF/BGP/EIGRP/MPLS commands identical. Some legacy commands removed (mostly Frame Relay, ATM). |
+| `Serial0/0`, `FastEthernet0/0` | `GigabitEthernet1`, `GigabitEthernet2` | Cosmetic — rename interfaces. |
+| L2 switching features (VLAN, STP, trunks) | **vIOS-L2** | GNS3vault used a 3640 with NM-16ESW switch module. Use vIOS-L2 instead. |
+
+**Frame Relay labs:** GNS3vault has many "OSPF over Frame Relay" labs. Frame Relay is **removed from CCNA/CCNP since 2016** — skip these. The concept they teach (OSPF network types) is covered by other labs in the same OSPF folder.
 
 ---
 
 ## Lab-by-lab mapping to your ENCOR study plan
 
-Below: every Cisco/router-flavored lab in the external repo, mapped to the ENCOR week and what it teaches. Status: **USE** = drop-in for your study plan / **ADAPT** = small CLI tweaks needed (I'll do them on demand) / **SKIP** = not in ENCOR scope.
+Status legend: **USE** = drop-in / **ADAPT** = needs minor CLI/topology tweak / **SKIP** = not in ENCOR scope or obsolete (Frame Relay, RIP, etc.) / **BONUS** = beyond ENCOR but worth doing if you have time.
 
-### Week 1–2 — L2 (STP / VLAN / EtherChannel)
+### Week 1–2 — L2 (STP / VLAN / EtherChannel / Trunks)
 
-| External lab | Status | Notes |
+From `gns3vault-archive/Switching/`:
+
+| Lab | Status | Notes |
 |---|---|---|
-| *(none — the external repo has no STP/VLAN/EtherChannel labs)* | — | **Gap.** Use Jeremy's IT Lab (free YouTube, CCNA-level but topology-correct), Cisco Packet Tracer ENCOR sample labs, or my hand-written Lab I1 (now Validated). |
+| [vlans-and-trunks](https://github.com/networklessons/labs/tree/main/gns3vault-archive/Switching/vlans-and-trunks) | **USE** | Start here. |
+| [vtp-vlan-trunking-protocol](https://github.com/networklessons/labs/tree/main/gns3vault-archive/Switching/vtp-vlan-trunking-protocol) | **USE** | ENCOR has light VTP coverage but worth doing. |
+| [pagp-lacp-etherchannel](https://github.com/networklessons/labs/tree/main/gns3vault-archive/Switching/pagp-lacp-etherchannel) | **USE** | Both protocols in one lab. Replaces my Lab I2. |
+| [pvst-per-vlan-spanning-tree](https://github.com/networklessons/labs/tree/main/gns3vault-archive/Switching/pvst-per-vlan-spanning-tree) | **USE** | PVST basics. |
+| [pvrst-per-vlan-rapid-spanning-tree](https://github.com/networklessons/labs/tree/main/gns3vault-archive/Switching/pvrst-per-vlan-rapid-spanning-tree) | **USE** | RPVST+ — exam-relevant. Replaces my Lab I1 Phase 1. |
+| [mst-multiple-spanning-tree](https://github.com/networklessons/labs/tree/main/gns3vault-archive/Switching/mst-multiple-spanning-tree) | **USE** | MST — replaces my Lab I1 Phase 2. |
+| [spanning-tree-root-guard](https://github.com/networklessons/labs/tree/main/gns3vault-archive/Switching/spanning-tree-root-guard) | **USE** | Dedicated Root Guard lab. **Do this one. After my Lab I1 errors, this is exactly the validation you need.** |
+| [spanning-tree-bpdu-guard](https://github.com/networklessons/labs/tree/main/gns3vault-archive/Switching/spanning-tree-bpdu-guard) | **USE** | Dedicated BPDU Guard lab. |
+| [spanning-tree-loop-guard](https://github.com/networklessons/labs/tree/main/gns3vault-archive/Switching/spanning-tree-loop-guard) | **USE** | Loop Guard. |
+| [spanning-tree-bpdu-filter](https://github.com/networklessons/labs/tree/main/gns3vault-archive/Switching/spanning-tree-bpdu-filter) | **USE** | BPDU Filter (and why you usually don't want it). |
+| [udld-unidirectional-link-detection](https://github.com/networklessons/labs/tree/main/gns3vault-archive/Switching/udld-unidirectional-link-detection) | **USE** | UDLD — exam-relevant. |
+| [dhcp-snooping](https://github.com/networklessons/labs/tree/main/gns3vault-archive/Switching/dhcp-snooping) | **USE** | DHCP snooping. Slot into Week 13 (security) too. |
+| [private-vlan](https://github.com/networklessons/labs/tree/main/gns3vault-archive/Switching/private-vlan) | **BONUS** | Private VLAN — niche but exam-eligible. |
+| [vacl-vlan-access-list](https://github.com/networklessons/labs/tree/main/gns3vault-archive/Switching/vacl-vlan-access-list) | **BONUS** | VACL. |
+| [flex-links-backup-interface](https://github.com/networklessons/labs/tree/main/gns3vault-archive/Switching/flex-links-backup-interface) | **SKIP** | Flex links are deprecated. |
+| [switch-svi-interface-and-routing](https://github.com/networklessons/labs/tree/main/gns3vault-archive/Switching/switch-svi-interface-and-routing) | **USE** | SVI L3 — fundamental. |
+| [spanning-tree-for-ccna](https://github.com/networklessons/labs/tree/main/gns3vault-archive/Switching/spanning-tree-for-ccna) | **SKIP** | CCNA-level recap. Skip unless you want a warmup. |
+| [ccnp-switch-lab](https://github.com/networklessons/labs/tree/main/gns3vault-archive/Switching/ccnp-switch-lab) | **USE** | Multi-feature integrated lab. Good week-2 capstone. |
 
-**Verdict for L2:** External repo doesn't cover. Keep hand-written Lab I1 (Validated) + Lab I2 (I'll validate when you reach it).
+**Verdict:** External repo fully replaces my Labs I1 and I2. Do all 4 spanning-tree guard labs in sequence — they will give you the correct placement intuition that I failed to deliver.
 
 ---
 
 ### Week 3 — OSPF basics
 
-| External lab | Status | Maps to objective |
+From `gns3vault-archive/OSPF/`:
+
+| Lab | Status | Notes |
 |---|---|---|
-| [ospf-basic-configuration](https://github.com/networklessons/labs/tree/main/containerlab/labs/ospf/cisco/ospf-basic-configuration) | **USE** | 3-router triangle, single area, MD5 auth. Replaces my Lab I3 Phase 1. |
-| [ospf-three-routers-triangle](https://github.com/networklessons/labs/tree/main/containerlab/labs/ospf/cisco/ospf-three-routers-triangle) | **USE** | Same topology, simpler config. Good for first day. |
-| [ospf-dr-bdr-two-routers](https://github.com/networklessons/labs/tree/main/containerlab/labs/ospf/cisco/ospf-dr-bdr-two-routers) | **USE** | DR/BDR election mechanics. |
-| [ospf-dr-bdr-three-routers](https://github.com/networklessons/labs/tree/main/containerlab/labs/ospf/cisco/ospf-dr-bdr-three-routers) | **USE** | DR/BDR with 3 routers — see how election handles ties. |
-| [ospf-md5-authentication](https://github.com/networklessons/labs/tree/main/containerlab/labs/ospf/cisco/ospf-md5-authentication) | **USE** | OSPF authentication. |
-| [ospf-six-routers-in-a-row](https://github.com/networklessons/labs/tree/main/containerlab/labs/ospf/cisco/ospf-six-routers-in-a-row) | **USE** | Reference bandwidth, cost, path selection. |
-| [ospf-four-routers-square](https://github.com/networklessons/labs/tree/main/containerlab/labs/ospf/cisco/ospf-four-routers-square) | **USE** | ECMP and tiebreakers. |
+| [ospf-single-area](https://github.com/networklessons/labs/tree/main/gns3vault-archive/OSPF/ospf-single-area) | **USE** | Start here. |
+| [ospf-dr-bdr-election](https://github.com/networklessons/labs/tree/main/gns3vault-archive/OSPF/ospf-dr-bdr-election) | **USE** | DR/BDR mechanics. |
+| [ospf-authentication](https://github.com/networklessons/labs/tree/main/gns3vault-archive/OSPF/ospf-authentication) | **USE** | Plain + MD5 auth + virtual link auth. |
+| [ospf-md5-authentication-rotating-key](https://github.com/networklessons/labs/tree/main/gns3vault-archive/OSPF/ospf-md5-authentication-rotating-key) | **USE** | Key rotation — exam-relevant. |
+| [ospf-auto-cost-reference-bandwidth](https://github.com/networklessons/labs/tree/main/gns3vault-archive/OSPF/ospf-auto-cost-reference-bandwidth) | **USE** | Cost calculation. |
+| [ospf-per-neighbor-cost](https://github.com/networklessons/labs/tree/main/gns3vault-archive/OSPF/ospf-per-neighbor-cost) | **USE** | Per-neighbor cost manipulation. |
+| [ospf-intermediate](https://github.com/networklessons/labs/tree/main/gns3vault-archive/OSPF/ospf-intermediate) | **USE** | Multi-feature integration. |
 
 ### Week 4 — OSPF advanced
 
-| External lab | Status | Maps to objective |
+| Lab | Status | Notes |
 |---|---|---|
-| [ospf-area-0-1-2](https://github.com/networklessons/labs/tree/main/containerlab/labs/ospf/cisco/ospf-area-0-1-2) | **USE** | Multi-area OSPF (ABR behavior). |
-| [ospf-area-0-1-2-external](https://github.com/networklessons/labs/tree/main/containerlab/labs/ospf/cisco/ospf-area-0-1-2-external) | **USE** | LSA type 5 (external) propagation. |
-| [ospf-area-0-1-2-external-nssa](https://github.com/networklessons/labs/tree/main/containerlab/labs/ospf/cisco/ospf-area-0-1-2-external-nssa) | **USE** | NSSA / LSA type 7 — exam favorite. |
-| [ospf-virtual-link](https://github.com/networklessons/labs/tree/main/containerlab/labs/ospf/cisco/ospf-virtual-link) | **USE** | Virtual links — uncommon but exam-eligible. |
-| [ospf-network-type-broadcast](https://github.com/networklessons/labs/tree/main/containerlab/labs/ospf/cisco/ospf-network-type-broadcast) | **USE** | All 6 network type labs (p2p, p2mp, p2mp-nb, broadcast, non-broadcast, loopback) — exam tests these constantly. |
-| [ospf-network-type-p2p](https://github.com/networklessons/labs/tree/main/containerlab/labs/ospf/cisco/ospf-network-type-p2p) | **USE** | Same. |
-| [ospf-network-type-non-broadcast](https://github.com/networklessons/labs/tree/main/containerlab/labs/ospf/cisco/ospf-network-type-non-broadcast) | **USE** | Same. |
-| [ospf-network-type-p2mp](https://github.com/networklessons/labs/tree/main/containerlab/labs/ospf/cisco/ospf-network-type-p2mp) | **USE** | Same. |
-| [ospf-network-type-p2mp-non-broadcast](https://github.com/networklessons/labs/tree/main/containerlab/labs/ospf/cisco/ospf-network-type-p2mp-non-broadcast) | **USE** | Same. |
-| [ospf-network-type-loopback](https://github.com/networklessons/labs/tree/main/containerlab/labs/ospf/cisco/ospf-network-type-loopback) | **USE** | Same. |
-| [ospf-vrf-three-routers](https://github.com/networklessons/labs/tree/main/containerlab/labs/ospf/cisco/ospf-vrf-three-routers) | **USE** | OSPF inside a VRF — pairs with VRF-Lite lab (Lab V1). |
-| [ospf-lsa-type-10-mpls-te](https://github.com/networklessons/labs/tree/main/containerlab/labs/ospf/cisco/ospf-lsa-type-10-mpls-te) | **SKIP** | MPLS-TE is Post-ENCOR territory. |
-
-**Verdict for OSPF:** External repo replaces my Lab I3 entirely. ~12 high-quality OSPF labs, covers blueprint completely.
+| [ospf-stub-area](https://github.com/networklessons/labs/tree/main/gns3vault-archive/OSPF/ospf-stub-area) | **USE** | Stub area. |
+| [ospf-totally-stub](https://github.com/networklessons/labs/tree/main/gns3vault-archive/OSPF/ospf-totally-stub) | **USE** | Totally stubby. |
+| [ospf-nssa-not-so-stubby-area](https://github.com/networklessons/labs/tree/main/gns3vault-archive/OSPF/ospf-nssa-not-so-stubby-area) | **USE** | NSSA — exam favorite. |
+| [ospf-totally-nssa](https://github.com/networklessons/labs/tree/main/gns3vault-archive/OSPF/ospf-totally-nssa) | **USE** | Totally NSSA. |
+| [ospf-lsa-type-3-summarization](https://github.com/networklessons/labs/tree/main/gns3vault-archive/OSPF/ospf-lsa-type-3-summarization) | **USE** | Inter-area summarization. |
+| [ospf-lsa-type-5-summarization](https://github.com/networklessons/labs/tree/main/gns3vault-archive/OSPF/ospf-lsa-type-5-summarization) | **USE** | External-route summarization. |
+| [ospf-summarization-discard-route](https://github.com/networklessons/labs/tree/main/gns3vault-archive/OSPF/ospf-summarization-discard-route) | **USE** | Discard route auto-generation. |
+| [ospf-virtual-link](https://github.com/networklessons/labs/tree/main/gns3vault-archive/OSPF/ospf-virtual-link) | **USE** | Virtual link. |
+| [ospf-virtual-link-and-summarization](https://github.com/networklessons/labs/tree/main/gns3vault-archive/OSPF/ospf-virtual-link-and-summarization) | **BONUS** | Combination scenario. |
+| [ospf-suppress-forward-address](https://github.com/networklessons/labs/tree/main/gns3vault-archive/OSPF/ospf-suppress-forward-address) | **BONUS** | Niche but exam-eligible. |
+| [ospf-flood-reduction](https://github.com/networklessons/labs/tree/main/gns3vault-archive/OSPF/ospf-flood-reduction) | **BONUS** | Flood reduction. |
+| [ospf-demand-circuit](https://github.com/networklessons/labs/tree/main/gns3vault-archive/OSPF/ospf-demand-circuit) | **SKIP** | Demand circuit is for dial-up. Obsolete. |
+| All `ospf-over-frame-relay-*` (5 labs) | **SKIP** | Frame Relay removed from ENCOR. The network-type concept is covered in the next ENCOR labs below — use `containerlab/labs/ospf/cisco/ospf-network-type-*` instead (modern, no FR). |
 
 ---
 
 ### Week 5 — BGP
 
-| External lab | Status | Maps to objective |
-|---|---|---|
-| [ebgp-two-routers](https://github.com/networklessons/labs/tree/main/containerlab/labs/bgp/cisco/ebgp-two-routers) | **USE** | First BGP lab — eBGP basics. |
-| [bgp-ebgp-two-routers](https://github.com/networklessons/labs/tree/main/containerlab/labs/bgp/cisco/bgp-ebgp-two-routers) | **USE** | Duplicate of above with slight variation; do one. |
-| [ibgp-two-routers](https://github.com/networklessons/labs/tree/main/containerlab/labs/bgp/cisco/ibgp-two-routers) | **USE** | iBGP, next-hop-self requirement. |
-| [bgp-ebgp-multihop-loopbacks](https://github.com/networklessons/labs/tree/main/containerlab/labs/bgp/cisco/bgp-ebgp-multihop-loopbacks) | **USE** | eBGP multihop + loopback peering — exam favorite. |
-| [bgp-ebgp-multihop-not-directly-connected](https://github.com/networklessons/labs/tree/main/containerlab/labs/bgp/cisco/bgp-ebgp-multihop-not-directly-connected) | **USE** | Same concept, second scenario. |
-| [bgp-as-path-prepend](https://github.com/networklessons/labs/tree/main/containerlab/labs/bgp/cisco/bgp-as-path-prepend) | **USE** | AS-path manipulation — best-path selection mechanics. |
-| [bgp-route-reflector](https://github.com/networklessons/labs/tree/main/containerlab/labs/bgp/cisco/bgp-route-reflector) | **USE** | RR — scales iBGP, exam topic. |
+GNS3vault BGP folder has **50 labs** — overkill for ENCOR. Pick these:
 
-**Verdict for BGP:** External repo replaces my Lab I4 entirely. 6 solid BGP labs. Gaps in this repo: no community/local-pref labs — for those use my Lab I4 Phase 2 (which I'll validate when you reach it) or the corresponding NetworkLessons.com articles which cover them in the OCG-equivalent depth.
+| Lab | Status | Notes |
+|---|---|---|
+| [bgp-basic](https://github.com/networklessons/labs/tree/main/gns3vault-archive/BGP/bgp-basic) | **USE** | Start here. |
+| [ebgp-external-bgp](https://github.com/networklessons/labs/tree/main/gns3vault-archive/BGP/ebgp-external-bgp) | **USE** | eBGP. |
+| [ibgp-internal-bgp](https://github.com/networklessons/labs/tree/main/gns3vault-archive/BGP/ibgp-internal-bgp) | **USE** | iBGP. |
+| [bgp-ebgp-multihop](https://github.com/networklessons/labs/tree/main/gns3vault-archive/BGP/bgp-ebgp-multihop) | **USE** | Multihop + loopback peering. |
+| [bgp-update-source](https://github.com/networklessons/labs/tree/main/gns3vault-archive/BGP/bgp-update-source) | **USE** | Update-source. |
+| [bgp-next-hop-self](https://github.com/networklessons/labs/tree/main/gns3vault-archive/BGP/bgp-next-hop-self) | **USE** | `next-hop-self` — fundamental. |
+| [bgp-route-reflectors](https://github.com/networklessons/labs/tree/main/gns3vault-archive/BGP/bgp-route-reflectors) | **USE** | RR. |
+| [bgp-attribute-weight](https://github.com/networklessons/labs/tree/main/gns3vault-archive/BGP/bgp-attribute-weight) | **USE** | Weight — Cisco-only. |
+| [bgp-attribute-local-preference](https://github.com/networklessons/labs/tree/main/gns3vault-archive/BGP/bgp-attribute-local-preference) | **USE** | LOCAL_PREF. |
+| [bgp-attribute-as-path](https://github.com/networklessons/labs/tree/main/gns3vault-archive/BGP/bgp-attribute-as-path) | **USE** | AS-path prepending. |
+| [bgp-attribute-med](https://github.com/networklessons/labs/tree/main/gns3vault-archive/BGP/bgp-attribute-med) | **USE** | MED. |
+| [bgp-attribute-origin](https://github.com/networklessons/labs/tree/main/gns3vault-archive/BGP/bgp-attribute-origin) | **USE** | Origin code. |
+| [bgp-communities](https://github.com/networklessons/labs/tree/main/gns3vault-archive/BGP/bgp-communities) | **USE** | Communities — exam favorite. |
+| [bgp-communities-no-export](https://github.com/networklessons/labs/tree/main/gns3vault-archive/BGP/bgp-communities-no-export), [no-advertise](https://github.com/networklessons/labs/tree/main/gns3vault-archive/BGP/bgp-communities-no-advertise), [local-as](https://github.com/networklessons/labs/tree/main/gns3vault-archive/BGP/bgp-communities-local-as) | **USE** | Well-known communities. |
+| [bgp-md5-authentication](https://github.com/networklessons/labs/tree/main/gns3vault-archive/BGP/bgp-md5-authentication) | **USE** | Auth. |
+| [bgp-filtering-extended-access-list](https://github.com/networklessons/labs/tree/main/gns3vault-archive/BGP/bgp-filtering-extended-access-list), [bgp-as-path-access-list](https://github.com/networklessons/labs/tree/main/gns3vault-archive/BGP/bgp-as-path-access-list) | **USE** | Path filtering. |
+| [bgp-peer-group](https://github.com/networklessons/labs/tree/main/gns3vault-archive/BGP/bgp-peer-group) | **USE** | Peer groups. |
+| [bgp-aggregation](https://github.com/networklessons/labs/tree/main/gns3vault-archive/BGP/bgp-aggregation) | **USE** | Aggregation. |
+| [bgp-confederations](https://github.com/networklessons/labs/tree/main/gns3vault-archive/BGP/bgp-confederations) | **BONUS** | Confederations — exam-eligible but rare in practice. |
+| [bgp-advanced](https://github.com/networklessons/labs/tree/main/gns3vault-archive/BGP/bgp-advanced) | **BONUS** | Multi-feature capstone. |
+| All other BGP labs (~25) | **POST-ENCOR / BONUS** | Excellent depth, save for after the cert. |
 
 ---
 
 ### Week 6 — EIGRP + IS-IS
 
-| External lab | Status | Maps to objective |
+| Lab | Status | Notes |
 |---|---|---|
-| [eigrp-authentication-hmac-sha-256](https://github.com/networklessons/labs/tree/main/containerlab/labs/eigrp/eigrp-authentication-hmac-sha-256) | **USE** | Only EIGRP lab in the repo. ENCOR has EIGRP at survey-level only, so this single lab + OCG reading is enough. |
-| [is-is-single-area-two-routers](https://github.com/networklessons/labs/tree/main/containerlab/labs/isis/cisco/is-is-single-area-two-routers) | **USE** | IS-IS basics. ENCOR doesn't test IS-IS, but seeing it once helps the "compare IGPs" exam questions. |
-
-**Verdict:** Light coverage matches light ENCOR weight on these.
+| `gns3vault-archive/EIGRP/` (23 labs) | **USE 3** | EIGRP is light on ENCOR. Pick: `eigrp-basic`, `eigrp-authentication`, `eigrp-summarization`. |
+| `containerlab/labs/isis/cisco/is-is-single-area-two-routers` | **USE** | IS-IS isn't really in ENCOR but a one-look-at-it lab is useful. |
 
 ---
 
-### Week 7 — First-hop redundancy (HSRP / VRRP)
+### Week 7 — First-hop redundancy + Services
 
-| External lab | Status | Maps to objective |
+From `gns3vault-archive/Network Services/`:
+
+| Lab | Status | Notes |
 |---|---|---|
-| [hsrp-basic-ip-only](https://github.com/networklessons/labs/tree/main/containerlab/labs/ip-services/hsrp-basic-ip-only) | **USE** | Simplest HSRP. Start here. |
-| [hsrp-basic-single-group](https://github.com/networklessons/labs/tree/main/containerlab/labs/ip-services/hsrp-basic-single-group) | **USE** | Single-group HSRP with virtual IP. |
-| [hsrp-preemption](https://github.com/networklessons/labs/tree/main/containerlab/labs/ip-services/hsrp-preemption) | **USE** | Preemption — exam topic. |
-| [hsrp-timers](https://github.com/networklessons/labs/tree/main/containerlab/labs/ip-services/hsrp-timers) | **USE** | Hello/hold timers. |
-| [hsrp-authentication-md5-key-string](https://github.com/networklessons/labs/tree/main/containerlab/labs/ip-services/hsrp-authentication-md5-key-string) | **USE** | HSRP authentication. |
-| [hsrp-authentication-md5-keychain](https://github.com/networklessons/labs/tree/main/containerlab/labs/ip-services/hsrp-authentication-md5-keychain) | **USE** | Authentication with keychain. |
-| [hsrp-authentication-plain-text](https://github.com/networklessons/labs/tree/main/containerlab/labs/ip-services/hsrp-authentication-plain-text) | **USE** | (Why you shouldn't use it — comparison.) |
-| [hsrp-object-tracking-interface](https://github.com/networklessons/labs/tree/main/containerlab/labs/ip-services/hsrp-object-tracking-interface) | **USE** | Interface tracking — exam favorite. |
-| [hsrp-object-tracking-ip-sla](https://github.com/networklessons/labs/tree/main/containerlab/labs/ip-services/hsrp-object-tracking-ip-sla) | **USE** | IP SLA tracking — exam favorite. |
-| [hsrp-bfd-peering](https://github.com/networklessons/labs/tree/main/containerlab/labs/ip-services/hsrp-bfd-peering) | **USE** | HSRP + BFD for sub-second failover. |
-| [hsrp-ipv6](https://github.com/networklessons/labs/tree/main/containerlab/labs/ip-services/hsrp-ipv6) | **USE** | HSRPv2 on IPv6. |
-
-**Verdict for HSRP:** External repo replaces my Lab I5 entirely. 11 deep HSRP labs. No VRRP labs in the external repo — VRRP is similar enough to HSRP that one OCG reading + one quick hand-typed VRRP config covers it.
+| [hot-standby-routing-protocol](https://github.com/networklessons/labs/tree/main/gns3vault-archive/Network%20Services/hot-standby-routing-protocol) | **USE** | HSRP basics. |
+| [vrrp-virtual-router-redundancy-protocol](https://github.com/networklessons/labs/tree/main/gns3vault-archive/Network%20Services/vrrp-virtual-router-redundancy-protocol) | **USE** | VRRP. |
+| [glbp-gateway-load-balancing-protocol](https://github.com/networklessons/labs/tree/main/gns3vault-archive/Network%20Services/glbp-gateway-load-balancing-protocol) | **USE** | GLBP — exam-eligible. |
+| [dhcp-server](https://github.com/networklessons/labs/tree/main/gns3vault-archive/Network%20Services/dhcp-server) | **USE** | DHCP server on IOS. |
+| [dhcp-relay](https://github.com/networklessons/labs/tree/main/gns3vault-archive/Network%20Services/dhcp-relay) | **USE** | DHCP relay (`ip helper-address`). |
+| [nat-pat-overload](https://github.com/networklessons/labs/tree/main/gns3vault-archive/Network%20Services/nat-pat-overload), [nat-dynamic](https://github.com/networklessons/labs/tree/main/gns3vault-archive/Network%20Services/nat-dynamic), [nat-static](https://github.com/networklessons/labs/tree/main/gns3vault-archive/Network%20Services/nat-static) | **USE** | NAT — basic ENCOR. |
+| [ip-service-level-agreement-sla](https://github.com/networklessons/labs/tree/main/gns3vault-archive/Network%20Services/ip-service-level-agreement-sla) | **USE** | IP SLA — exam-eligible. |
+| [policy-based-routing](https://github.com/networklessons/labs/tree/main/gns3vault-archive/Network%20Services/policy-based-routing) | **USE** | PBR. |
+| [proxy-arp](https://github.com/networklessons/labs/tree/main/gns3vault-archive/Network%20Services/proxy-arp) | **USE** | Proxy ARP. |
+| [floating-static-routes](https://github.com/networklessons/labs/tree/main/gns3vault-archive/Network%20Services/floating-static-routes) | **USE** | Floating statics. |
 
 ---
 
 ### Week 8 — Multicast
 
-| External lab | Status | Maps to objective |
+From `gns3vault-archive/Multicast/`:
+
+| Lab | Status | Notes |
 |---|---|---|
-| *(no native multicast lab)* | — | **Gap.** Keep hand-written Lab I6 (PIM-SM with static RP) — when you reach it, ask me to validate it. |
+| [multicast-pim-dense-mode](https://github.com/networklessons/labs/tree/main/gns3vault-archive/Multicast/multicast-pim-dense-mode) | **USE** | PIM-DM. |
+| [multicast-pim-sparse-mode](https://github.com/networklessons/labs/tree/main/gns3vault-archive/Multicast/multicast-pim-sparse-mode) | **USE** | PIM-SM — main ENCOR multicast topic. |
+| [multicast-pim-sparse-dense-mode](https://github.com/networklessons/labs/tree/main/gns3vault-archive/Multicast/multicast-pim-sparse-dense-mode) | **USE** | Sparse-dense. |
+| [multicast-autorp](https://github.com/networklessons/labs/tree/main/gns3vault-archive/Multicast/multicast-autorp), [auto-rp-listener](https://github.com/networklessons/labs/tree/main/gns3vault-archive/Multicast/auto-rp-listener) | **USE** | Auto-RP. |
+| [multicast-pim-bootstrap-router](https://github.com/networklessons/labs/tree/main/gns3vault-archive/Multicast/multicast-pim-bootstrap-router) | **USE** | BSR. |
+| [multicast-pim-dr-election](https://github.com/networklessons/labs/tree/main/gns3vault-archive/Multicast/multicast-pim-dr-election) | **USE** | PIM DR election. |
+| [multicast-rpf-failure](https://github.com/networklessons/labs/tree/main/gns3vault-archive/Multicast/multicast-rpf-failure) | **USE** | RPF check — exam favorite. |
+| [multicast-tunneling](https://github.com/networklessons/labs/tree/main/gns3vault-archive/Multicast/multicast-tunneling) | **BONUS** | Multicast over GRE. |
+
+**Replaces my Lab I6 entirely. Excellent coverage.**
 
 ---
 
 ### Week 9 — Wireless
 
-| External lab | Status | Maps to objective |
-|---|---|---|
-| *(no wireless lab)* | — | Use Cisco DevNet Always-On 9800 sandbox. No emulation option. |
+No external labs. DevNet Always-On 9800 sandbox only.
 
 ---
 
-### Week 10 — Overlay tunnels & VPNs (VRF-Lite, GRE, IPsec, DMVPN)
+### Week 10 — Tunnels / VRF / MPLS
 
-| External lab | Status | Maps to objective |
+From `gns3vault-archive/Tunneling/` and `gns3vault-archive/MPLS/`:
+
+| Lab | Status | Notes |
 |---|---|---|
-| [ospf-vrf-three-routers](https://github.com/networklessons/labs/tree/main/containerlab/labs/ospf/cisco/ospf-vrf-three-routers) | **USE** | OSPF in a VRF. Closest external lab to VRF-Lite. Combine with my Lab V1 for inter-VRF routing. |
-| [mpls-ldp-two-routers](https://github.com/networklessons/labs/tree/main/containerlab/labs/mpls/mpls-ldp-two-routers) | **USE** | MPLS LDP basics. Not heavy on ENCOR but referenced. |
-| [mpls-vpn-pe-ce-ospf](https://github.com/networklessons/labs/tree/main/containerlab/labs/mpls/mpls-vpn-pe-ce-ospf) | **POST-ENCOR** | MPLS L3VPN is Post-ENCOR territory, but worth peeking ahead. |
-| *(no GRE-over-IPsec lab)* | — | Keep my Lab V2 (will validate when you reach it). |
+| [gre-tunnel-basic](https://github.com/networklessons/labs/tree/main/gns3vault-archive/Tunneling/gre-tunnel-basic) | **USE** | GRE basics. |
+| [gre-over-ipsec](https://github.com/networklessons/labs/tree/main/gns3vault-archive/Tunneling/gre-over-ipsec) | **USE** | GRE+IPsec — replaces my Lab V2. |
+| [encrypted-gre-tunnel](https://github.com/networklessons/labs/tree/main/gns3vault-archive/Tunneling/encrypted-gre-tunnel) | **USE** | Alternative encrypted-GRE approach. |
+| [site-to-site-ipsec-vpn](https://github.com/networklessons/labs/tree/main/gns3vault-archive/Tunneling/site-to-site-ipsec-vpn) | **USE** | Plain S2S IPsec. |
+| [vrf-lite](https://github.com/networklessons/labs/tree/main/gns3vault-archive/MPLS/vrf-lite) | **USE** | VRF-Lite — replaces my Lab V1. |
+| [vrf-routing](https://github.com/networklessons/labs/tree/main/gns3vault-archive/MPLS/vrf-routing) | **USE** | VRF inter-VRF routing. |
+| [mpls-ldp](https://github.com/networklessons/labs/tree/main/gns3vault-archive/MPLS/mpls-ldp) | **USE** | LDP basics. |
+| [basic-mpls-vpn](https://github.com/networklessons/labs/tree/main/gns3vault-archive/MPLS/basic-mpls-vpn) | **USE** | MPLS L3VPN — referenced in ENCOR. |
+| [mpls-vpn-pe-ce-using-ospf](https://github.com/networklessons/labs/tree/main/gns3vault-archive/MPLS/mpls-vpn-pe-ce-using-ospf) | **POST-ENCOR** | Deeper than ENCOR needs. |
+| All `mpls-traffic-engineering-*`, `mpls-atom-*` | **POST-ENCOR** | TE / pseudowire — Post-ENCOR. |
 
 ---
 
 ### Week 11–12 — VXLAN / SD-Access
 
-| External lab | Status | Maps to objective |
+GNS3vault is too old to cover VXLAN. Use:
+
+| Lab | Status | Notes |
 |---|---|---|
-| [vxlan-underlay-ospf-31-overlay-false](https://github.com/networklessons/labs/tree/main/containerlab/labs/vxlan/cisco/vxlan-underlay-ospf-31-overlay-false) | **ADAPT** | Cisco NX-OS — I'll rewrite to IOS-XE for CSR1000v when you reach it. Same idea as my Lab V3. |
-| [vxlan-bgp-evpn-l2-vni](https://github.com/networklessons/labs/tree/main/containerlab/labs/vxlan/cisco/vxlan-bgp-evpn-l2-vni) | **POST-ENCOR** | EVPN is overkill for ENCOR. Save for Post-ENCOR. |
-| [vxlan-bgp-evpn-l3-vni](https://github.com/networklessons/labs/tree/main/containerlab/labs/vxlan/cisco/vxlan-bgp-evpn-l3-vni) | **POST-ENCOR** | Same. |
-| All other `vxlan-*` labs (~15) | **POST-ENCOR** | Wide variety of underlays — perfect for Post-ENCOR weeks 8–10. |
-
-**Verdict:** ENCOR-level VXLAN is light (concept + one lab). The big VXLAN library here is a goldmine for Post-ENCOR.
+| `containerlab/labs/vxlan/cisco/vxlan-underlay-ospf-31-overlay-false` | **ADAPT** | NX-OS — I'll rewrite to IOS-XE for your CSR1000v when you reach this week. |
+| Hand-written A2 (LISP) and V3 (VXLAN flood-and-learn) | **VALIDATE** | I'll re-pass these when you reach Week 11. |
 
 ---
 
-### Week 13 — Security (AAA, port-security, CoPP, ZBF, MACsec)
+### Week 13 — Security
 
-| External lab | Status | Notes |
+From `gns3vault-archive/Security/`:
+
+| Lab | Status | Notes |
 |---|---|---|
-| *(no AAA/port-sec/CoPP labs)* | — | **Gap.** Keep my Labs S1 / S2 / S3 (will validate when you reach them). |
-| [asa-single](https://github.com/networklessons/labs/tree/main/containerlab/labs/cisco/asa/asa-single), [asa-failover](https://github.com/networklessons/labs/tree/main/containerlab/labs/cisco/asa/asa-failover) | **SKIP** | ASA is CCNP Security, not ENCOR. |
+| [aaa-authentication](https://github.com/networklessons/labs/tree/main/gns3vault-archive/Security/aaa-authentication) | **USE** | RADIUS/TACACS+ auth. Replaces my Lab S1. |
+| [aaa-command-authorization](https://github.com/networklessons/labs/tree/main/gns3vault-archive/Security/aaa-command-authorization) | **USE** | Command authz. |
+| [aaa-exec-authorization](https://github.com/networklessons/labs/tree/main/gns3vault-archive/Security/aaa-exec-authorization) | **USE** | EXEC authz. |
+| [basic-zone-based-firewall](https://github.com/networklessons/labs/tree/main/gns3vault-archive/Security/basic-zone-based-firewall) | **USE** | ZBF — replaces my Lab S3. |
+| [control-place-policing](https://github.com/networklessons/labs/tree/main/gns3vault-archive/Security/control-place-policing) | **USE** | CoPP (typo in folder name — "place" should be "plane"). Pairs with my Lab S2's L2 hardening. |
+| [standard-access-list](https://github.com/networklessons/labs/tree/main/gns3vault-archive/Security/standard-access-list), [extended-access-list](https://github.com/networklessons/labs/tree/main/gns3vault-archive/Security/extended-access-list), [named-access-list](https://github.com/networklessons/labs/tree/main/gns3vault-archive/Security/named-access-list), [time-based-access-list](https://github.com/networklessons/labs/tree/main/gns3vault-archive/Security/time-based-access-list), [reflexive-access-list](https://github.com/networklessons/labs/tree/main/gns3vault-archive/Security/reflexive-access-list) | **USE** | ACL family. ENCOR expects fluency. |
+| [unicast-reverse-path-forwarding-urpf](https://github.com/networklessons/labs/tree/main/gns3vault-archive/Security/unicast-reverse-path-forwarding-urpf) | **USE** | uRPF — exam-eligible. |
+| [role-based-cli-access](https://github.com/networklessons/labs/tree/main/gns3vault-archive/Security/role-based-cli-access) | **BONUS** | Parser views — minor topic. |
+| [ios-firewall-cbac](https://github.com/networklessons/labs/tree/main/gns3vault-archive/Security/ios-firewall-cbac), [tcp-intercept](https://github.com/networklessons/labs/tree/main/gns3vault-archive/Security/tcp-intercept), [transparent-ios-firewall](https://github.com/networklessons/labs/tree/main/gns3vault-archive/Security/transparent-ios-firewall) | **SKIP** | Deprecated IOS firewall features. |
 
----
+From `gns3vault-archive/Switching/` for L2 hardening (also useful in Week 2):
 
-### Week 14 — Automation & telemetry
-
-| External lab | Status | Notes |
+| Lab | Status | Notes |
 |---|---|---|
-| [sdn-onos](https://github.com/networklessons/labs/tree/main/containerlab/labs/sdn/onos) | **SKIP** | ONOS / OpenDaylight are not in ENCOR blueprint. Conceptually interesting but not exam-relevant. |
-| [sdn-opendaylight](https://github.com/networklessons/labs/tree/main/containerlab/labs/sdn/opendaylight) | **SKIP** | Same. |
-| *(no NETCONF/RESTCONF/EEM/Ansible labs)* | — | Keep my Labs AU1 / AU2 / AU3 (automation labs are my strongest territory — they're single-image, single-feature, no topology subtleties for me to mis-pattern). |
+| [dhcp-snooping](https://github.com/networklessons/labs/tree/main/gns3vault-archive/Switching/dhcp-snooping) | **USE** | L2 hardening. |
+| (Port-security is covered in CCNP Switch lab and inside the broader `ccnp-switch-lab` capstone.) | | |
 
 ---
 
-### Bonus / not on a specific week
+### Week 14 — Automation & Telemetry
 
-| External lab | Status | Notes |
+From `gns3vault-archive/Network Management/`:
+
+| Lab | Status | Notes |
 |---|---|---|
-| [3tier-test](https://github.com/networklessons/labs/tree/main/containerlab/labs/3-tier-test) | **USE later** | A 3-tier campus topology you can use as scaffolding for any week. |
-| [dhcp-relay-ipv4](https://github.com/networklessons/labs/tree/main/containerlab/labs/dhcp/dhcp-relay-ipv4) | **USE** | DHCP relay — small but exam-relevant. Slot it into Week 7 (services). |
-| [vpc-three-switches](https://github.com/networklessons/labs/tree/main/containerlab/labs/vpc/vpc-three-switches) | **POST-ENCOR** | NX-OS vPC = StackWise/VSS equivalent — Post-ENCOR data-center. |
-| [topologies/r1-r2-r3](https://github.com/networklessons/labs/tree/main/containerlab/labs/topologies/r1-r2-r3) | **USE** | Bare 3-router topology. Use as a starting template for any custom lab. |
-| `ospf/arista`, `ospf/frr`, `ospf/fortinet`, `vxlan/arista`, `vxlan/frr`, `vxlan/vyos` | **SKIP for ENCOR** | Single-vendor for ENCOR. Save these for Post-ENCOR. |
+| [ntp-network-time-protocol](https://github.com/networklessons/labs/tree/main/gns3vault-archive/Network%20Management/ntp-network-time-protocol) | **USE** | NTP. |
+| [syslog-server-logging](https://github.com/networklessons/labs/tree/main/gns3vault-archive/Network%20Management/syslog-server-logging), [system-message-logging](https://github.com/networklessons/labs/tree/main/gns3vault-archive/Network%20Management/system-message-logging) | **USE** | Logging. |
+| [snmpv2-server](https://github.com/networklessons/labs/tree/main/gns3vault-archive/Network%20Management/snmpv2-server), [snmpv3-server](https://github.com/networklessons/labs/tree/main/gns3vault-archive/Network%20Management/snmpv3-server) | **USE** | SNMP — exam topic. |
+| [eem-scripting](https://github.com/networklessons/labs/tree/main/gns3vault-archive/Network%20Management/eem-scripting), [eem-scripting-event-detector](https://github.com/networklessons/labs/tree/main/gns3vault-archive/Network%20Management/eem-scripting-event-detector) | **USE** | EEM — replaces my Lab AU3. |
+| [kron-task-scheduler](https://github.com/networklessons/labs/tree/main/gns3vault-archive/Network%20Management/kron-task-scheduler) | **USE** | Kron scheduler — exam-eligible. |
+| [configuration-archive-to-tftp](https://github.com/networklessons/labs/tree/main/gns3vault-archive/Network%20Management/configuration-archive-to-tftp) | **USE** | Config archive — exam-eligible. |
+| [cdp-cisco-discovery-protocol](https://github.com/networklessons/labs/tree/main/gns3vault-archive/Network%20Management/cdp-cisco-discovery-protocol) | **USE** | CDP. (LLDP not in repo — read OCG.) |
+| *No NETCONF/RESTCONF/Ansible labs* | — | Keep my Labs AU1, AU2. These are CSR1000v-specific and modern — I'll validate when you reach them. |
 
 ---
 
-## How to actually run one external lab on your EVE-NG
+## Big-picture summary
 
-Take `ospf-basic-configuration` as the example:
+| ENCOR area | Best source | Hand-written labs to keep |
+|---|---|---|
+| L2 (STP/VLAN/EtherChannel/L2-security) | **GNS3vault Switching folder** | None — fully covered |
+| OSPF | **GNS3vault OSPF folder** | None — fully covered |
+| BGP | **GNS3vault BGP folder** | None — fully covered |
+| EIGRP / IS-IS | **GNS3vault EIGRP folder + 1 containerlab IS-IS** | None |
+| FHRP (HSRP/VRRP/GLBP) | **GNS3vault Network Services folder** | None |
+| Multicast | **GNS3vault Multicast folder** | None — fully covered |
+| Services (NAT/DHCP/IP SLA/PBR) | **GNS3vault Network Services folder** | None |
+| Tunnels / VRF / MPLS | **GNS3vault Tunneling + MPLS folders** | None |
+| Wireless | DevNet sandbox | None |
+| VXLAN / SD-Access | Hand-written (A2, V3) — modern topics, GNS3vault too old | A2, V3 (I'll validate) |
+| Security | **GNS3vault Security folder** | S2 partial (port-security only) |
+| Automation (NETCONF/RESTCONF/Ansible) | Hand-written (AU1, AU2) — modern topics | AU1, AU2 (I'll validate) |
+| EEM / SNMP / NTP / Syslog | **GNS3vault Network Management folder** | None |
 
-1. Open the lab folder: https://github.com/networklessons/labs/tree/main/containerlab/labs/ospf/cisco/ospf-basic-configuration
-2. Read `ospf-basic-configuration.clab.yml` — gives you the topology (R1, R2, R3) and links (R1 Et0/1 ↔ R2 Et0/1; R1 Et0/2 ↔ R3 Et0/1; R2 Et0/2 ↔ R3 Et0/2).
-3. In EVE-NG, drop 3 CSR1000v nodes, wire them in a triangle. Map IOL `Ethernet0/1` → CSR `GigabitEthernet1`, `Ethernet0/2` → `GigabitEthernet2`. Keep the same logical wiring.
-4. For each router, open `clab-ospf-basic-configuration/R<N>/startup-config.cfg.partial`, copy the config block, paste into your CSR (only fix needed: rename `Ethernet0/X` to `GigabitEthernetX`).
-5. Verify with the standard OSPF show commands (covered in the matching NetworkLessons.com article).
-
-**If anything fails, paste the `show` output here and I'll diagnose** — this is the workflow I'm most reliable at: reading real device output against a known-good reference.
-
----
-
-## Updated per-week guidance
-
-| Week | Topic | Primary lab source | Hand-written labs to keep |
-|---|---|---|---|
-| 1 | L2 baseline | Hand-written A1 | A1 (validate when you reach it) |
-| 2 | STP / EtherChannel | Hand-written I1 / I2 | I1 (Validated), I2 (will validate) |
-| 3 | OSPF basics | **External** (5 labs above) | — |
-| 4 | OSPF advanced | **External** (8 labs above) | — |
-| 5 | BGP | **External** (6 labs above) | I4 Phase 2 for community/local-pref (will validate) |
-| 6 | EIGRP + IS-IS | **External** (2 labs above) | — |
-| 7 | HSRP / VRRP / DHCP relay | **External** (11 HSRP + DHCP relay) | Small hand-written VRRP snippet |
-| 8 | Multicast | Hand-written I6 (will validate) | I6 |
-| 9 | Wireless | DevNet sandbox | — |
-| 10 | Tunnels / VRF / MPLS | **External** (VRF + MPLS LDP) + my V1, V2 (validate) | V1, V2 |
-| 11–12 | VXLAN / SD-Access | **External** (1 ADAPT lab) + my A2, V3 (validate) | A2, V3 |
-| 13 | Security | Hand-written S1, S2, S3 (validate) | S1, S2, S3 |
-| 14 | Automation | Hand-written AU1, AU2, AU3 | AU1, AU2, AU3 |
-
-**Net result:** ~40% of your lab work moves to pre-validated external labs (OSPF, BGP, HSRP, MPLS basics, VXLAN underlay). ~60% stays hand-written, focused on areas where my error rate is lower (single-image, single-feature, no topology subtleties).
+**Net result:** roughly **85% of your lab work moves to pre-validated external labs with full descriptions**. The remaining 15% is modern topics (VXLAN, NETCONF, RESTCONF, Ansible, LISP) that GNS3vault is too old to cover — I write those hand-written labs and validate them before you reach each week.
 
 ---
 
-## Open question for you
+## How I help you with these labs
 
-The external HSRP labs cover 11 scenarios — that's deeper than the ENCOR exam needs. Do you want to:
-- (a) do all 11 for completeness (Post-ENCOR-quality depth), or
-- (b) pick the 4 most exam-relevant (basic, preemption, object-tracking-interface, object-tracking-ip-sla) and skip the auth/timer variants
+1. **Pre-week briefing.** Each week, I list the 4–8 labs to run (from the right category folder), in order, with rationale ("do bgp-basic before bgp-attribute-as-path because…").
+2. **Lab walkthrough on demand.** Paste the `.md` file's scenario or task list, I explain anything unclear before you start.
+3. **Real-time debugging.** Paste `show` output during the lab, I diagnose against the goal.
+4. **Final-config comparison.** If you finish and want a review, paste your config + the `final-configs/R<N>.txt`, I diff them and explain meaningful differences.
+5. **Notes & Anki extraction.** After each lab session, I extract the 5–10 highest-value concepts into `ENCOR-Jeff-Kish-Notes.md` and turn them into Anki cards in `ENCOR-Practice-Questions.md`.
+6. **Gap-filling labs.** For modern topics not in GNS3vault, I write focused single-image labs and validate them before you touch them.
 
-My recommendation: (b) for the exam, then revisit (a) for Post-ENCOR if you want to specialize in carrier/enterprise FHRP. Tell me which and I'll prune the week 7 list accordingly.
+---
+
+## Open questions for you
+
+1. Want me to **rebuild `ENCOR-Study-Plan.md`** so each week's "Lab" section directly references these external lab folders (with links) instead of my hand-written labs? Cleaner than maintaining two documents.
+2. Should I **archive my hand-written labs** that are now redundant (most of `ENCOR-Labs-EVE-NG.md`) and keep only the modern/gap-filling ones (A2, V3, AU1, AU2, S2 partial)? Reduces clutter, less for me to maintain (and break).
+3. Want to do the **extension to 16 weeks** at the same time — add buffer weeks?
+
+Any combination of (1), (2), (3) — say which and I'll do them in one pass.
