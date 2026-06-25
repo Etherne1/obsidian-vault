@@ -1,2 +1,2 @@
-There are 3 subfolders:
-1. otus - labs from the Russian 
+CCNP ENCOR is an AI-based course with labs from GNS3Vault, videos from CBT Nuggets and INE, and the official Cisco certification guide.
+Post ENCOR is a more advanced course, designed in a similar manner.
