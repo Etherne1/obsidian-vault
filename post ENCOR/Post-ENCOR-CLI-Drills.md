@@ -1,19 +1,53 @@
 # Post-ENCOR CLI Drills (multi-vendor)
 
-**Goal:** muscle memory. Each drill is timed. Target time = "production-engineer fluent" — if you're slower, repeat it next day.
+**Goal:** muscle memory. Each drill is timed. Target time = "production-engineer fluent" — if you're slower, repeat it the next day.
 
-**Format:** scenario, then the exact commands. Cisco IOS-XE default. **MikroTik** and **Juniper** equivalents noted where the comparison is instructive — these are the languages you'll actually see in Russia/EU.
-
-**Workflow:**
-- One drill per day during weeks 1-13 (≈65 drills, plus 3 weekend reviews)
-- Drill 1× from memory → check answer → repeat next day if you missed any line.
-- Tag completed drills in the tracker: `D-NN ✓`.
+**Format:** scenario, then the exact commands. Cisco IOS-XE default. MikroTik and Juniper equivalents noted where the comparison is instructive — these are the languages you'll actually see in Russia/CIS/EU.
 
 ---
 
-## D-01 — Create a VRF with route-leaking (Week 1)
+## When to use these drills
 
-**Scenario:** create VRF `CUST_A` (RD `65001:1`, RT both 100), assign `Gi0/1` to it with `10.0.0.1/24`, leak the shared VRF `SHARED` (RT 999) into it.
+This file is Pass 2 only. Don't touch it during Pass 1.
+
+| Mode | When | How |
+|---|---|---|
+| **Warmup** | Before each Pass 2 lab session | Pick 1–2 drills from the same topic block. Type from memory before opening EVE-NG. |
+| **Cooldown** | After each Pass 2 lab session | Pick 1 drill from the same block. No notes — from memory only. If you fail, it becomes tomorrow's Anki card. |
+| **Marathon** | Pass 2 Blocks 15–16 | 5–8 drills per session, mixed topics, no peeking. By the capstone you should breeze through D-01–D-46 cold. |
+
+**One rule:** type from memory first. Check after. Repeat the drill next day if you missed any line. The drill is passed when you type it correctly and at target speed without looking.
+
+Mark completed drills in your tracker: `D-NN ✓`.
+
+---
+
+## Drill map by Pass 2 block
+
+| Block | Topic | Drills |
+|---|---|---|
+| 1 | VRF-Lite + BFD | D-01, D-02 |
+| 2 | Route manipulation + PBR | D-03, D-04 |
+| 3 | Redistribution | D-05 |
+| 4 | EIGRP deep | D-06, D-07 |
+| 5 | OSPFv3 + auth | D-08 |
+| 6 | OSPF areas + network types | D-09, D-10 |
+| 7 | IS-IS | D-11, D-42 |
+| 8 | BGP deep | D-12, D-13, D-14, D-15 |
+| 9 | BGP troubleshooting | D-16, D-17 |
+| 10 | MPLS L3VPN | D-18, D-19, D-20 |
+| 11 | DMVPN + IPsec | D-21, D-22, D-23, D-24 |
+| 12 | Security | D-25, D-26, D-27, D-28 |
+| 13 | Telemetry + services | D-29, D-30, D-31, D-32, D-33 |
+| 14 | Design | — (no CLI drills; notebook activity) |
+| 15 | Automation build | D-34, D-35, D-36, D-37, D-38, D-39, D-40, D-41 |
+| 16 | Capstone | D-43 to D-60 |
+
+---
+
+## D-01 — Create a VRF with route-leaking (Block 1)
+
+**Scenario:** create VRF `CUST_A` (RD `65001:1`, RT export/import 100), assign `Gi0/1` to it with `10.0.0.1/24`, leak the shared VRF `SHARED` (RT 999) into it.
 
 **Cisco IOS-XE:**
 ```
@@ -55,7 +89,7 @@ set interfaces ge-0/0/1.0 family inet address 10.0.0.1/24
 
 ---
 
-## D-02 — BFD on OSPF (Week 1)
+## D-02 — BFD on OSPF and BGP (Block 1)
 
 ```
 interface Gi0/2
@@ -63,19 +97,22 @@ interface Gi0/2
 !
 router ospf 1
  bfd all-interfaces
+!
+router bgp 65000
+ neighbor 10.0.0.2 fall-over bfd
 ```
 
-**Verify:** `show bfd neighbors detail` (look for `Async` mode, `Up` state, `Echo` flag).
+**Verify:** `show bfd neighbors detail` — confirm `Async` mode, `Up` state, `Echo` flag.
 
-**MikroTik:** `/routing/bfd/configuration add interfaces=ether2 transmit-interval=300ms`.
+**MikroTik:** `/routing/bfd/configuration add interfaces=ether2 transmit-interval=300ms`
 
-**Target time:** 30 seconds.
+**Target time:** 45 seconds.
 
 ---
 
-## D-03 — Prefix-list + route-map for BGP outbound (Week 2)
+## D-03 — Prefix-list + route-map for BGP outbound (Block 2)
 
-**Scenario:** announce only `10.0.0.0/8 ge 24 le 24` (i.e. `/24`s) to neighbor `192.0.2.1`, set local-pref 200.
+**Scenario:** announce only `10.0.0.0/8 ge 24 le 24` (only /24s) to neighbor `192.0.2.1`, set local-pref 200.
 
 ```
 ip prefix-list ANNOUNCE_24 seq 10 permit 10.0.0.0/8 ge 24 le 24
@@ -92,9 +129,9 @@ router bgp 65000
 
 ---
 
-## D-04 — Policy-based routing (Week 2)
+## D-04 — Policy-based routing with tracking (Block 2)
 
-**Scenario:** TCP/80 from `10.10.10.0/24` out `Gi0/2`, all else default routing. Backup nexthop tracked.
+**Scenario:** TCP/80 from `10.10.10.0/24` out `Gi0/2`, all else default routing. Fallback if link is down.
 
 ```
 ip sla 1
@@ -114,11 +151,13 @@ interface Gi0/3
  ip policy route-map PBR_WEB
 ```
 
+**MikroTik equivalent (for notes):** `/ip firewall mangle` mark-routing + `/ip route rule` — different mechanism, same outcome.
+
 **Target time:** 2 minutes.
 
 ---
 
-## D-05 — Mutual OSPF↔EIGRP redistribution with tag loop-prevention (Week 3)
+## D-05 — Mutual OSPF↔EIGRP redistribution with tag loop-prevention (Block 3)
 
 ```
 router ospf 1
@@ -138,13 +177,13 @@ route-map FROM_OSPF permit 20
  set tag 200
 ```
 
-**Verify:** `show ip route ospf | i E2` shows routes with tag 100; loop is gone.
+**Verify:** `show ip route ospf | i E2` — routes present with tag 100. No ghost EIGRP routes via OSPF path.
 
 **Target time:** 90 seconds.
 
 ---
 
-## D-06 — Named-mode EIGRP with SHA-256 (Week 4)
+## D-06 — Named-mode EIGRP with SHA-256 (Block 4)
 
 ```
 key chain EIGRP_KEYS
@@ -161,13 +200,13 @@ router eigrp LAB4
   network 0.0.0.0
 ```
 
-**Verify:** `show eigrp protocols` → `Hello timer is X, Hold time is X, HMAC-SHA-256`.
+**Verify:** `show eigrp protocols` → `HMAC-SHA-256` in auth line.
 
 **Target time:** 60 seconds.
 
 ---
 
-## D-07 — EIGRP stub on a spoke (Week 4)
+## D-07 — EIGRP stub on a spoke (Block 4)
 
 ```
 router eigrp LAB4
@@ -181,7 +220,7 @@ router eigrp LAB4
 
 ---
 
-## D-08 — OSPFv3 dual-AF + key-chain auth (Week 5)
+## D-08 — OSPFv3 dual-AF + key-chain auth (Block 5)
 
 ```
 key chain OSPF_KEYS
@@ -203,13 +242,13 @@ interface Gi0/1
  ospfv3 authentication key-chain OSPF_KEYS
 ```
 
-**Verify:** `show ospfv3 ipv4 neighbor` and `show ospfv3 ipv6 neighbor` both `FULL`.
+**Verify:** `show ospfv3 ipv4 neighbor` and `show ospfv3 ipv6 neighbor` both show `FULL`.
 
 **Target time:** 90 seconds.
 
 ---
 
-## D-09 — OSPF NSSA with type-7 → type-5 translation (Week 6)
+## D-09 — OSPF NSSA with type-7 → type-5 translation (Block 6)
 
 ```
 router ospf 1
@@ -219,13 +258,13 @@ router ospf 1
 ip route 203.0.113.0 255.255.255.0 Null0
 ```
 
-**Verify on ABR:** `show ip ospf database nssa-external` (Type-7 in area 2), `show ip ospf database external` (Type-5 in area 0).
+**Verify on ABR:** `show ip ospf database nssa-external` (Type-7 in area 2), then `show ip ospf database external` (Type-5 in area 0).
 
 **Target time:** 30 seconds.
 
 ---
 
-## D-10 — Virtual link across area-2 (Week 6)
+## D-10 — Virtual link across area-2 (Block 6)
 
 ```
 ! On ABR_A (between area 0 and area 2)
@@ -239,13 +278,13 @@ router ospf 1
 
 **Verify:** `show ip ospf virtual-links` → `Up`.
 
-**Then remove and re-design without the virtual-link.**
+**Then:** remove the virtual link and redesign without it. Write in your notes why virtual links are an anti-pattern in production.
 
 **Target time:** 60 seconds.
 
 ---
 
-## D-11 — IS-IS L1/L2 with wide metrics + SHA auth (Week 7)
+## D-11 — IS-IS L1/L2 with wide metrics + SHA auth (Block 7)
 
 ```
 router isis BACKBONE
@@ -280,7 +319,7 @@ set protocols isis interface ge-0/0/1.0 hello-authentication-key "ISIS_SECRET"
 
 ---
 
-## D-12 — BGP with IPv4 + IPv6 AF, RR client (Week 8)
+## D-12 — BGP with IPv4 + IPv6 AF, RR client (Block 8)
 
 ```
 router bgp 65020
@@ -308,7 +347,7 @@ router bgp 65020
 
 ---
 
-## D-13 — AS-path regex filter (Week 8)
+## D-13 — AS-path regex filter (Block 8)
 
 ```
 ip as-path access-list 10 deny _64500_
@@ -325,7 +364,7 @@ router bgp 65020
 
 ---
 
-## D-14 — BGP community-based policy (Week 8)
+## D-14 — BGP community-based policy (Block 8)
 
 ```
 ip community-list standard NO_EXPORT permit 65020:200
@@ -345,7 +384,7 @@ router bgp 65020
 
 ---
 
-## D-15 — BGP fast-converge (Week 8)
+## D-15 — BGP fast convergence (Block 8)
 
 ```
 router bgp 65020
@@ -364,15 +403,15 @@ router bgp 65020
 
 ---
 
-## D-16 — BGP debug & state diagnosis (Week 9)
+## D-16 — BGP debug and state diagnosis (Block 9)
 
-**One-liner used to start a controlled debug:**
+**Start a controlled debug:**
 ```
 debug bgp ipv4 unicast updates 192.0.2.1 in
 debug ip tcp transactions
 ```
 
-**Then narrow:**
+**Narrow with:**
 ```
 show ip bgp neighbors 192.0.2.1 | i BGP state|holdtime|Last
 show tcp brief
@@ -389,7 +428,7 @@ show ip access-lists | i 179
 
 ---
 
-## D-17 — IPv6 BGP with link-local next-hop (Week 9)
+## D-17 — IPv6 BGP with link-local next-hop (Block 9)
 
 ```
 router bgp 65020
@@ -400,13 +439,13 @@ router bgp 65020
   neighbor fe80::1%Gi0/1 route-map IPV6_IN in
 ```
 
-**Verify:** `show bgp ipv6 unicast neighbors fe80::1%Gi0/1` → Established.
+**Verify:** `show bgp ipv6 unicast neighbors fe80::1%Gi0/1` → `Established`.
 
 **Target time:** 30 seconds.
 
 ---
 
-## D-18 — MPLS underlay: OSPF + LDP (Week 10)
+## D-18 — MPLS underlay: OSPF + LDP (Block 10)
 
 ```
 mpls label range 100 999
@@ -433,7 +472,9 @@ show mpls forwarding-table
 
 ---
 
-## D-19 — MPLS L3VPN PE config (Week 10)
+## D-19 — MPLS L3VPN PE config (Block 10)
+
+This is the most important drill in the plan. Don't move on until you can type it cold.
 
 ```
 vrf definition VPN_RED
@@ -463,11 +504,11 @@ interface Gi0/2
 
 **Verify:** `show bgp vpnv4 unicast all summary` and `show ip route vrf VPN_RED`.
 
-**Target time:** 3 minutes (the most important drill of the whole plan).
+**Target time:** 3 minutes.
 
 ---
 
-## D-20 — Verify L3VPN forwarding (Week 10)
+## D-20 — Verify L3VPN forwarding (Block 10)
 
 ```
 show mpls forwarding-table vrf VPN_RED
@@ -475,13 +516,13 @@ show bgp vpnv4 unicast vrf VPN_RED 10.0.0.0/24
 traceroute vrf VPN_RED 10.0.0.1
 ```
 
-The traceroute must show MPLS labels in the path.
+The traceroute must show MPLS labels in the path — if it doesn't, LDP or MP-BGP is broken.
 
 **Target time:** 30 seconds.
 
 ---
 
-## D-21 — DMVPN Phase 3 hub (Week 11)
+## D-21 — DMVPN Phase 3 hub (Block 11)
 
 ```
 interface Tunnel0
@@ -499,7 +540,7 @@ interface Tunnel0
 !
 router eigrp 100
  network 172.16.0.0
- !
+!
 interface Tunnel0
  no ip split-horizon eigrp 100
  no ip next-hop-self eigrp 100
@@ -509,7 +550,7 @@ interface Tunnel0
 
 ---
 
-## D-22 — DMVPN Phase 3 spoke (Week 11)
+## D-22 — DMVPN Phase 3 spoke (Block 11)
 
 ```
 interface Tunnel0
@@ -532,7 +573,7 @@ interface Tunnel0
 
 ---
 
-## D-23 — IKEv2 profile for DMVPN (Week 11)
+## D-23 — IKEv2 profile for DMVPN (Block 11)
 
 ```
 crypto ikev2 proposal IKEV2_PROP
@@ -570,9 +611,9 @@ crypto ipsec profile DMVPN_IPSEC
 
 ---
 
-## D-24 — MikroTik IKEv2 site-to-site (Week 11)
+## D-24 — MikroTik IKEv2 site-to-site (Block 11)
 
-**Useful comparison drill — same goal, different syntax:**
+Useful comparison drill — same goal, different syntax:
 
 ```
 /ip ipsec profile
@@ -592,7 +633,7 @@ add src-address=10.10.10.0/24 dst-address=10.20.20.0/24 \
 
 ---
 
-## D-25 — TACACS+ AAA full config (Week 12)
+## D-25 — TACACS+ AAA full config (Block 12)
 
 ```
 aaa new-model
@@ -622,7 +663,9 @@ ip tacacs source-interface Loopback0
 
 ---
 
-## D-26 — Hardening one-liner block (Week 12)
+## D-26 — Hardening one-liner block (Block 12)
+
+This one saves your job on a 3am hardening audit. Know it cold.
 
 ```
 no ip http server
@@ -658,11 +701,11 @@ banner motd ^
 ^
 ```
 
-**Target time:** type from memory — aim for 2 minutes; this saves your job on a 3am hardening audit.
+**Target time:** 2 minutes.
 
 ---
 
-## D-27 — CoPP policy (Week 12)
+## D-27 — CoPP policy (Block 12)
 
 ```
 ip access-list extended COPP_MGMT
@@ -710,11 +753,11 @@ control-plane
 
 **Verify:** `show policy-map control-plane input`.
 
-**Target time:** 3 minutes (the longest drill — expected).
+**Target time:** 3 minutes — the longest drill; expected.
 
 ---
 
-## D-28 — IPv6 First-Hop Security on a vIOS L2 access port (Week 12)
+## D-28 — IPv6 First-Hop Security on a vIOS-L2 access port (Block 12)
 
 ```
 ipv6 nd raguard policy HOST_RA
@@ -736,13 +779,13 @@ interface range Gi0/0 - 23
  ipv6 source-guard attach-policy SG_POLICY
 ```
 
-**Verify:** `show ipv6 snooping policies`, `show ipv6 neighbors binding`.
+**Verify:** `show ipv6 snooping policies` and `show ipv6 neighbors binding`.
 
 **Target time:** 2 minutes.
 
 ---
 
-## D-29 — SNMPv3 with auth+priv (Week 13)
+## D-29 — SNMPv3 with auth+priv (Block 13)
 
 ```
 snmp-server group ADMIN_GRP v3 priv read ADMIN_VIEW
@@ -755,16 +798,17 @@ snmp-server location MOSCOW-DC1-RACK7
 snmp-server contact noc@example.com
 ```
 
-**Verify on LibreNMS / from a test box:**
-```
-snmpwalk -v3 -l authPriv -u monitor_user -a SHA -A SNMP_AUTH_PASS -x AES -X SNMP_PRIV_PASS 10.0.0.1 1.3.6.1.2.1.1
+**Verify from a test box:**
+```bash
+snmpwalk -v3 -l authPriv -u monitor_user -a SHA -A SNMP_AUTH_PASS \
+         -x AES -X SNMP_PRIV_PASS 10.0.0.1 1.3.6.1.2.1.1
 ```
 
 **Target time:** 90 seconds.
 
 ---
 
-## D-30 — Flexible NetFlow record + monitor + export (Week 13)
+## D-30 — Flexible NetFlow record + monitor + export (Block 13)
 
 ```
 flow record FNF_RECORD
@@ -808,7 +852,7 @@ interface Gi0/1
 
 ---
 
-## D-31 — IP SLA + Tracker + Conditional static route (Week 13)
+## D-31 — IP SLA + tracker + conditional static route (Block 13)
 
 ```
 ip sla 10
@@ -824,13 +868,13 @@ ip route 0.0.0.0 0.0.0.0 198.51.100.1 track 10
 ip route 0.0.0.0 0.0.0.0 203.0.113.1 100
 ```
 
-**Verify:** `show ip sla statistics 10`, `show track 10`. Pull the primary cable — default route should swap to backup.
+**Verify:** `show ip sla statistics 10` and `show track 10`. Pull the primary link — default route should swap to backup within the delay timer.
 
 **Target time:** 90 seconds.
 
 ---
 
-## D-32 — DHCP relay across VRFs (Week 13)
+## D-32 — DHCP relay across VRFs (Block 13)
 
 ```
 interface Vlan10
@@ -839,13 +883,13 @@ interface Vlan10
  ip helper-address vrf MGMT 10.99.99.50 global
 ```
 
-**Target time:** 30 seconds.
+**Target time:** 30 seconds. Simple config, easy to forget the `global` keyword under load.
 
 ---
 
-## D-33 — gNMI subscribe (Week 13, automation pivot starts here)
+## D-33 — gNMI subscribe (Block 13)
 
-**On Cisco IOS-XE:**
+**Enable on Cisco IOS-XE:**
 ```
 gnmi-yang
 gnmi-yang server
@@ -854,7 +898,7 @@ gnmi-yang secure-server
 gnmi-yang secure-port 9339
 ```
 
-**From your Linux box:**
+**Subscribe from Linux:**
 ```bash
 gnmic -a 10.0.0.1:9339 \
       --skip-verify \
@@ -867,7 +911,7 @@ gnmic -a 10.0.0.1:9339 \
 
 ---
 
-## D-34 — NETCONF over SSH from `ncclient` (Week 15)
+## D-34 — NETCONF over SSH from `ncclient` (Block 15)
 
 ```python
 from ncclient import manager
@@ -889,11 +933,11 @@ with manager.connect(
     print(reply.xml)
 ```
 
-**Target time:** 90 seconds (typed from memory).
+**Target time:** 90 seconds typed from memory.
 
 ---
 
-## D-35 — RESTCONF GET with requests (Week 15)
+## D-35 — RESTCONF GET with requests (Block 15)
 
 ```python
 import requests, urllib3
@@ -909,7 +953,7 @@ print(r.json())
 
 ---
 
-## D-36 — Nornir + NAPALM get-config (Week 15)
+## D-36 — Nornir + NAPALM get-config (Block 15)
 
 ```python
 from nornir import InitNornir
@@ -938,7 +982,7 @@ runner:
 
 ---
 
-## D-37 — Ansible playbook: backup configs from Cisco + MikroTik (Week 15)
+## D-37 — Ansible backup from Cisco + MikroTik (Block 15)
 
 ```yaml
 ---
@@ -966,13 +1010,13 @@ runner:
         dest: "configs/{{ inventory_hostname }}-{{ ansible_date_time.iso8601 }}.rsc"
 ```
 
-Run with: `ansible-playbook -i inventory.yaml backup.yaml`.
+Run with: `ansible-playbook -i inventory.yaml backup.yaml`
 
 **Target time:** 3 minutes.
 
 ---
 
-## D-38 — Git workflow drill (Week 15)
+## D-38 — Git workflow drill (Block 15)
 
 ```bash
 git checkout -b feature/add-vrf-cust-c
@@ -986,25 +1030,29 @@ git pull --rebase
 git branch -d feature/add-vrf-cust-c
 ```
 
-**Target time:** 30 seconds (this should be reflexive by Week 16).
+**Target time:** 30 seconds. This should be reflexive by Block 16.
 
 ---
 
-## D-39 — pyang explore a YANG module (Week 15)
+## D-39 — pyang explore a YANG module (Block 15)
 
 ```bash
-pyang -f tree -p ~/yang-modules/standard ~/yang-modules/standard/ietf/ietf-routing.yang | head -60
-pyang -f sample-xml-skeleton ~/yang-modules/standard/ietf/ietf-ospf.yang > ospf-skel.xml
+pyang -f tree -p ~/yang-modules/standard \
+      ~/yang-modules/standard/ietf/ietf-routing.yang | head -60
+
+pyang -f sample-xml-skeleton \
+      ~/yang-modules/standard/ietf/ietf-ospf.yang > ospf-skel.xml
 ```
 
 **Target time:** 30 seconds.
 
 ---
 
-## D-40 — `gnmic` capabilities check (Week 15)
+## D-40 — gnmic capabilities check (Block 15)
 
 ```bash
 gnmic -a 10.0.0.1:9339 --skip-verify -u admin -p admin capabilities
+
 gnmic -a 10.0.0.1:9339 --skip-verify -u admin -p admin get \
       --path "/interfaces/interface[name=GigabitEthernet1]/state/counters"
 ```
@@ -1013,8 +1061,9 @@ gnmic -a 10.0.0.1:9339 --skip-verify -u admin -p admin get \
 
 ---
 
-## D-41 — Promtheus scrape config for gnmic exporter (Week 15)
+## D-41 — Prometheus scrape config for gnmic exporter (Block 15)
 
+`prometheus.yml`:
 ```yaml
 scrape_configs:
   - job_name: 'gnmic'
@@ -1022,7 +1071,7 @@ scrape_configs:
       - targets: ['localhost:9804']
 ```
 
-`gnmic` config (`gnmic.yaml`):
+`gnmic.yaml`:
 ```yaml
 targets:
   10.0.0.1:9339:
@@ -1041,13 +1090,15 @@ outputs:
     listen: ":9804"
 ```
 
-Start with: `gnmic --config gnmic.yaml subscribe`.
+Start with: `gnmic --config gnmic.yaml subscribe`
 
 **Target time:** 90 seconds.
 
 ---
 
-## D-42 — Cisco-equivalent commands on Juniper for daily ops (Week 7 + 16)
+## D-42 — Cisco vs Juniper daily ops commands (Blocks 7 + 16)
+
+Flashcard format — drill both directions.
 
 | Cisco IOS-XE | Juniper Junos |
 |---|---|
@@ -1062,47 +1113,47 @@ Start with: `gnmic --config gnmic.yaml subscribe`.
 | `copy run start` | `commit` |
 | `do show ...` (in config mode) | `run show ...` |
 | `show logging` | `show log messages` |
-| `show interface counters` | `show interfaces extensive` |
+| `show interfaces counters` | `show interfaces extensive` |
 | `clear ip bgp X soft in` | `clear bgp neighbor X soft` |
-| `debug ip bgp updates in X` | `monitor traffic interface X detail` + `traceoptions` in BGP |
+| `debug ip bgp updates in X` | `traceoptions` in BGP stanza |
 
-**Drill action:** flashcard format. Cisco → Junos and Junos → Cisco. 20 minutes total over a few days.
+**Target time:** 20 minutes total over a few days — flashcard-style, not a sprint.
 
 ---
 
-## D-43 — Cisco vs MikroTik vs Juniper "show route" comparison (Week 16)
+## D-43 — Cisco vs MikroTik vs Juniper "show route" comparison (Block 16)
 
 | Goal | Cisco | MikroTik | Juniper |
 |---|---|---|---|
-| Show full routing table | `show ip route` | `/ip route print` | `show route` |
-| Show BGP table | `show bgp ipv4 unicast` | `/routing bgp advertisements print` | `show route table inet.0 protocol bgp` |
-| Show OSPF neighbors | `show ip ospf neighbor` | `/routing ospf neighbor print` | `show ospf neighbor` |
-| Show interface counters | `show interfaces Gi0/1` | `/interface print stats` | `show interfaces ge-0/0/1 detail` |
+| Full routing table | `show ip route` | `/ip route print` | `show route` |
+| BGP table | `show bgp ipv4 unicast` | `/routing bgp advertisements print` | `show route table inet.0 protocol bgp` |
+| OSPF neighbors | `show ip ospf neighbor` | `/routing ospf neighbor print` | `show ospf neighbor` |
+| Interface counters | `show interfaces Gi0/1` | `/interface print stats` | `show interfaces ge-0/0/1 detail` |
 | Reset BGP | `clear ip bgp 10.0.0.1 soft in` | `/routing bgp peer reset 0` | `clear bgp neighbor 10.0.0.1 soft` |
 | Save config | `write memory` | `/system backup save name=...` | `commit` |
 
-**Drill:** spend a coffee break doing this from memory once per week from Week 7 onward.
+**Drill:** spend a coffee break on this from memory once per week from Block 7 onward.
 
 ---
 
-## D-44 — Save & restore: TFTP push (Week 16)
+## D-44 — Config backup via SCP (Block 16)
 
-```
-copy running-config tftp://10.99.99.40/R1-config-backup.cfg
-copy tftp://10.99.99.40/R1-good-config.cfg running-config
-```
-
-**Or with SCP (production):**
 ```
 ip scp server enable
 copy running-config scp://admin@10.99.99.40/R1-config.cfg
+```
+
+**Or TFTP (legacy):**
+```
+copy running-config tftp://10.99.99.40/R1-config-backup.cfg
+copy tftp://10.99.99.40/R1-good-config.cfg running-config
 ```
 
 **Target time:** 20 seconds.
 
 ---
 
-## D-45 — Configuration rollback (IOS-XE archive) (Week 16)
+## D-45 — Configuration rollback with IOS-XE archive (Block 16)
 
 ```
 archive
@@ -1111,7 +1162,6 @@ archive
  write-memory
  time-period 1440
 !
-! Trigger:
 show archive
 configure replace bootflash:/archive/R1-1
 ```
@@ -1120,10 +1170,10 @@ configure replace bootflash:/archive/R1-1
 
 ---
 
-## D-46 — Multiple-context troubleshooting one-liner cheat (Week 16)
+## D-46 — Multi-context troubleshooting one-liners (Block 16)
 
 ```
-! Tunnel/IPsec breaks
+! Tunnel / IPsec broken
 show crypto session detail
 show crypto ikev2 sa detailed
 show dmvpn detail
@@ -1141,42 +1191,35 @@ show ip igmp groups
 
 ! Interface drops
 show interfaces Gi0/1 | i errors|drops|reset
-show platform hardware fed switch active fwd-asic resource ...
 ```
 
-**Target:** memorize the first command of each block.
+**Target:** memorize the first command of each block. The rest follow naturally once you're in the output.
 
 ---
 
-## D-47 to D-60 — Weekly review combos
+## D-47 to D-60 — Combination drills (Block 16 marathon)
 
-Once you finish drills D-01 to D-46, the remaining drills are **combinations**. Pick one per week from D-14 onward as a 5-minute warm-up:
+Once D-01 through D-46 are done, these combinations are your capstone warmup. Pick one per session during Block 16 as a 5–10 minute drill:
 
-| ID | Combo |
-|---|---|
-| D-47 | VRF + BGP-PE + RT import — Week 10 quick-rebuild |
-| D-48 | OSPF NSSA + redistribute static + verify Type-7→5 — Week 6 |
-| D-49 | DMVPN spoke from scratch (no IPsec) — Week 11 |
-| D-50 | DMVPN spoke + IPsec IKEv2 — Week 11 |
-| D-51 | TACACS+ + CoPP — Week 12 |
-| D-52 | SNMPv3 + IP SLA + tracker — Week 13 |
-| D-53 | Flexible NetFlow + export — Week 13 |
-| D-54 | gNMI subscribe + Prometheus scrape — Week 15 |
-| D-55 | Ansible backup → Git commit — Week 15 |
-| D-56 | Nornir state-gather report — Week 15 |
-| D-57 | NETCONF GET + parse with `xmltodict` — Week 15 |
-| D-58 | Full L3VPN end-to-end (Lab 10 mini-rebuild) — Week 16 |
-| D-59 | BGP gauntlet (Lab 9 mini-rebuild) — Week 16 |
-| D-60 | Capstone deployment via Ansible playbook (Lab 16 dress rehearsal) — Week 16 |
+| ID | Combination | Source block |
+|---|---|---|
+| D-47 | VRF + BGP-PE + RT import full rebuild | Block 10 |
+| D-48 | OSPF NSSA + redistribute static + verify Type-7→5 | Block 6 |
+| D-49 | DMVPN spoke from scratch — no IPsec | Block 11 |
+| D-50 | DMVPN spoke + IKEv2 IPsec — full | Block 11 |
+| D-51 | TACACS+ + CoPP on same router | Block 12 |
+| D-52 | SNMPv3 + IP SLA + tracker + floating static | Block 13 |
+| D-53 | Flexible NetFlow full — record + exporter + monitor + interface | Block 13 |
+| D-54 | gNMI subscribe + Prometheus scrape config | Block 13/15 |
+| D-55 | Ansible backup playbook → Git commit | Block 15 |
+| D-56 | Nornir state-gather report | Block 15 |
+| D-57 | NETCONF GET + parse with `xmltodict` | Block 15 |
+| D-58 | L3VPN end-to-end mini-rebuild (Lab 10) | Block 10 |
+| D-59 | BGP gauntlet — 6-bug diagnosis (Lab 9) | Block 9 |
+| D-60 | Capstone Ansible playbook dress rehearsal | Block 16 |
 
 ---
 
-**Total: 46 unique drills + 14 weekly combos = 60 drills.**
+**Total: 46 unique drills + 14 combination drills = 60 drills.**
 
-**Daily discipline:**
-1. Open this file.
-2. Pick today's drill (one per day during weeks 1-14 lines up; Week 15-16 mostly use combos).
-3. Type from memory; check; repeat if wrong.
-4. Mark in `Post-ENCOR-Progress-Tracker.csv`.
-
-By Week 16 your fingers know every command in this file. That's the goal — you don't think "what's the syntax", you think about the architecture.
+By Block 16 your fingers know every command in this file. That's the goal — you stop thinking about syntax and start thinking about architecture.

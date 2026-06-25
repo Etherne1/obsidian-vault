@@ -1,386 +1,518 @@
 # Post-ENCOR Labs — EVE-NG (vendor-light)
 
-**Assumed images in EVE-NG (same as your ENCOR setup):**
-- Cisco **vIOS L2**, **vIOS L3**, **CSR1000v 17.3.04a**
-- **MikroTik CHR** (free, download from mikrotik.com — works on x86 EVE-NG out of the box)
-- **FRR on Alpine/Debian Docker** (lightweight, ideal for IS-IS / EVPN drills)
-- **Juniper vMX** *(optional — load only if you have the trial image; everything works without it)*
+**Lab source philosophy:** use pre-validated GNS3vault labs (René Molenaar) wherever the topic exists in the archive. Hand-written labs only for topics GNS3vault is too old to cover: DMVPN, IS-IS, BFD, OSPFv3 address-families, named-mode EIGRP, IPv6 FHS, gNMI/telemetry, MikroTik cross-checks, automation, and the capstone.
+
+**GNS3vault repo:** https://github.com/networklessons/labs/tree/main/gns3vault-archive/
+
+**How to use GNS3vault labs:**
+1. Open the lab's `.md` file — it contains the scenario, numbered task list, and a YouTube walkthrough link.
+2. Build the topology in EVE-NG matching the `.png` diagram.
+3. Apply each router's `startup-configs/RN.txt` to get the same starting point.
+4. Work through the task list. Don't open `final-configs/` until you've attempted everything.
+5. Verify with the YouTube walkthrough. Only then diff your config against `final-configs/`.
+
+**Platform translation:** GNS3vault uses IOS 12.4/15.x on 3640/3725/7200. Your CSR1000v 17.3.04a is upward-compatible for all topics below. Rename `Serial0/0` → `GigabitEthernet1`, `FastEthernet0/0` → `GigabitEthernet1`. L2 features use vIOS-L2 instead of the NM-16ESW switch module.
+
+**Assumed images in EVE-NG:**
+- Cisco **vIOS-L2**, **vIOS-L3**, **CSR1000v 17.3.04a**
+- **MikroTik CHR** (free from mikrotik.com — boots on x86 EVE-NG)
+- **FRR on Alpine/Debian Docker** (for IS-IS and vendor-neutral drills)
+- **Juniper vMX** *(optional — everything works without it)*
 
 **Conventions:**
-- Loopbacks are `Lo0 = X.X.X.X/32` where X is the router number (R1 → 1.1.1.1/32).
-- Customer/admin networks use `10.X.0.0/24`. Backbone p2p links use `192.168.0.0/24` `/30` slices.
-- IPv6: ULA `fd00:X::/64` per router (X = router number).
-- Every lab ends with a **"prove it"** step — a `show` / capture / ping that demonstrates the goal was achieved.
-- Every lab ends with a **destroy and rebuild from notes** step so the muscle memory sticks.
+- Loopback0 = `X.X.X.X/32` where X = router number (R1 → 1.1.1.1/32)
+- Customer networks: `10.X.0.0/24`. Backbone p2p links: `192.168.0.X/30` slices.
+- IPv6: ULA `fd00:X::/64` per router.
+- Every lab ends with a **prove it** step and a **destroy and rebuild from notes** step.
 
 ---
 
 ## Lab 1 — VRF-Lite + BFD (Week 1)
 
-**Topology:**
-- 1× CSR1000v (`R1`) acting as a PE-style edge with three VRFs (`CUST_A`, `CUST_B`, `SHARED`)
-- 2× vIOS L3 acting as CE routers per VRF
-- 1× MikroTik CHR mirror copy of the scenario on the side
+**Coverage split:** VRF-Lite → GNS3vault. BFD → hand-written (not in GNS3vault).
+
+### Part A — VRF-Lite (GNS3vault)
+
+**GNS3vault labs** (`gns3vault-archive/MPLS/`):
+
+| Lab | What to do |
+|---|---|
+| [vrf-lite](https://github.com/networklessons/labs/tree/main/gns3vault-archive/MPLS/vrf-lite) | Start here. VRF creation, RD, interface assignment, routing separation. |
+| [vrf-routing](https://github.com/networklessons/labs/tree/main/gns3vault-archive/MPLS/vrf-routing) | Inter-VRF routing via route leaking. Prove overlapping `10.0.0.0/24` is isolated. |
+
+After both labs work, extend the topology yourself: add a `SHARED` VRF and leak specific routes into both customer VRFs using RT import. This is the creative step — no task list, just your notes.
+
+**MikroTik cross-check (hand-written):** repeat the `vrf-lite` scenario on a CHR (`/ip vrf`, `/routing/ospf/instance`, route-leaking via `/ip route`). Target: same VRF isolation, same overlapping prefix, proven with `/ip route print vrf=CUST_A`.
+
+### Part B — BFD (hand-written)
+
+GNS3vault has no BFD lab. Build this on two CSR1000v routers:
 
 **Tasks:**
-1. Define VRFs `CUST_A` (RD 65001:1, RT import/export 65001:100), `CUST_B` (RD 65001:2, RT 65001:200), `SHARED` (RD 65001:3, RT export 65001:300, import 65001:100 65001:200).
-2. Assign sub-interfaces to each VRF; configure `address-family ipv4 vrf` for OSPF on each.
-3. Use overlapping `10.0.0.0/24` in `CUST_A` and `CUST_B` — prove isolation.
-4. Leak `SHARED` routes into both customer VRFs via RT import.
-5. Enable BFD on the OSPF adjacencies (asynchronous mode, 300 ms × 3).
-6. Tear down one link; confirm sub-second convergence in `show ip ospf neighbor detail vrf CUST_A`.
-7. **MikroTik cross-check:** repeat steps 1–4 on a CHR (`/ip vrf`, `/routing/ospf/instance`, route-leaking via `/ip route`).
+1. OSPF adjacency between R1 and R2 on `Gi0/1` (area 0, point-to-point).
+2. Enable BFD: `bfd interval 300 min_rx 300 multiplier 3` on both interfaces.
+3. Enable BFD under OSPF: `bfd all-interfaces`.
+4. Verify: `show bfd neighbors detail` — confirm asynchronous mode, state Up, echo enabled.
+5. Simulate failure: `shutdown` the link. Measure convergence time against OSPF-only dead-interval (40 s default) vs BFD (0.9 s). Write the delta in your notes.
+6. Repeat for a BGP session: `neighbor X fall-over bfd`. Tear the session, confirm faster detection.
 
 **Prove it:**
-- `show vrf detail | i Name|Interfaces`
-- `show ip route vrf CUST_A` shows `10.0.0.0/24` from `CUST_A` only; same in `CUST_B`.
 - `show bfd neighbors detail` shows `300 ms × 3`, state `Up`.
-
-**Destroy & rebuild:** wipe the config, rebuild from your own notes without looking at the lab guide.
+- After link failure: `show ip ospf neighbor` shows neighbor gone within 1 second.
 
 ---
 
 ## Lab 2 — Route Manipulation & PBR (Week 2)
 
-**Topology:** 6 vIOS L3 in a partial mesh, 3 ASes, eBGP and OSPF mixed.
+**GNS3vault labs** (`gns3vault-archive/Network Services/` and `gns3vault-archive/BGP/`):
 
-**Tasks:**
-1. Build a prefix-list `BLOCK_RFC1918` matching `10.0.0.0/8 le 32`, `172.16.0.0/12 le 32`, `192.168.0.0/16 le 32`.
-2. Route-map `OUT_TO_PEER`: deny `BLOCK_RFC1918`, permit-set local-pref 200 on a specific prefix matched by another prefix-list.
-3. Apply outbound to one eBGP neighbor; verify with `show ip bgp neighbors X advertised-routes`.
-4. PBR: from a stub host LAN, route **TCP/80** out a backup interface, all else via primary. Use `match ip address` referencing an extended ACL; `set ip next-hop verify-availability` + tracking object on the primary.
-5. Tear primary link; confirm PBR fallback path with `traceroute` and `show ip policy`.
-6. **MikroTik cross-check:** the same PBR via `/ip firewall mangle` (mark-routing) + `/ip route rule`.
+| Lab | What to do |
+|---|---|
+| [policy-based-routing](https://github.com/networklessons/labs/tree/main/gns3vault-archive/Network%20Services/policy-based-routing) | Core PBR lab — route-map `match ip address`, `set ip next-hop verify-availability`. |
+| [bgp-filtering-extended-access-list](https://github.com/networklessons/labs/tree/main/gns3vault-archive/BGP/bgp-filtering-extended-access-list) | ACL-based BGP filtering — builds the prefix-list mental model. |
+| [bgp-as-path-access-list](https://github.com/networklessons/labs/tree/main/gns3vault-archive/BGP/bgp-as-path-access-list) | AS-path regex filtering — directly exam-relevant. |
 
-**Prove it:**
-- `show route-map` shows match counters incrementing.
-- `traceroute` from the LAN to a TCP/80 destination shows the backup path; to a TCP/443 destination shows the primary path.
+After the GNS3vault labs, do this **extension** on your own topology (no task list — build from knowledge):
 
----
+- Six-router partial mesh, 3 ASes, eBGP between them. Apply a route-map outbound that: denies RFC1918 (`prefix-list BLOCK_RFC1918`), sets local-pref 200 on a specific prefix. Verify with `show ip bgp neighbors X advertised-routes`.
+- PBR: from a stub LAN, route TCP/80 out a backup link, all other traffic via primary. Add `track 1` on the primary — PBR falls back when the primary is down.
 
-## Lab 3 — Mutual Redistribution Without Loops (Week 3)
-
-**Topology:** 4 vIOS L3 in a square; left edge runs OSPF, right edge runs EIGRP, two middle routers (ASBRs) do mutual redistribution. *Optional:* swap EIGRP for IS-IS on FRR for vendor diversity.
-
-**Tasks:**
-1. Build OSPF area 0 on the left, EIGRP AS 100 on the right.
-2. On both ASBRs, redistribute mutually with **route tags**: `tag 100` when going OSPF→EIGRP, `tag 200` when going EIGRP→OSPF.
-3. Add a deliberate redistribution loop (no filtering). Observe loop / suboptimal path with `show ip route` and `traceroute`.
-4. Fix with `redistribute … route-map DENY_RETURNING_TAG` — block any route with the protocol's "own" tag from being re-injected.
-5. Verify both directions have correct metric-type, seed-metric, and AD.
-
-**Prove it:**
-- `show ip route ospf` on the EIGRP side shows external routes with E2 / tag 200.
-- No "ghost" routes in `show ip route eigrp` originating from EIGRP itself via the OSPF path.
-- Convergence test: shut a link, verify failover is clean (no microloops).
+**MikroTik cross-check:** same PBR on a CHR via `/ip firewall mangle` (mark-routing) + `/ip route rule`. Compare the conceptual flow in your notes — note where Cisco and MikroTik differ in *where* the policy sits.
 
 ---
 
-## Lab 4 — EIGRP Deep, Named-Mode (Week 4)
+## Lab 3 — Route Redistribution (Week 3)
 
-**Topology:** 4 vIOS L3 in a hub-spoke + spoke-spoke triangle.
+**GNS3vault does not have a dedicated redistribution lab** but the building blocks are there. Use this sequence:
+
+| Lab | Purpose |
+|---|---|
+| [ospf-single-area](https://github.com/networklessons/labs/tree/main/gns3vault-archive/OSPF/ospf-single-area) | Baseline OSPF — use as left side of the redistribution topology. |
+| [eigrp-basic](https://github.com/networklessons/labs/tree/main/gns3vault-archive/EIGRP/eigrp-basic) | Baseline EIGRP — use as right side. |
+
+Then hand-build the redistribution scenario:
+
+**Topology:** 4 vIOS-L3 in a square. Left edge OSPF area 0, right edge EIGRP AS 100. Two middle routers are the ASBRs doing mutual redistribution.
 
 **Tasks:**
-1. Build **named-mode EIGRP** instance `LAB4` for IPv4 + IPv6 address families.
-2. Configure SHA-256 key-chain authentication; rotate one key mid-lab and confirm zero downtime.
-3. Configure the hub with `eigrp stub connected summary` on the spokes; verify only stub-type queries are sent.
-4. Trigger an **SIA scenario**: artificially blackhole a route on a stub by removing it; on the active speaker, observe `show ip eigrp topology active`.
-5. Resolve by setting `timers active-time disabled` and using `eigrp stub` properly.
+1. Redistribute OSPF into EIGRP and EIGRP into OSPF on both ASBRs — no filtering first. Observe the routing table. Identify the loop or suboptimal path with `traceroute`.
+2. Fix with route tags: `tag 100` when redistributing OSPF→EIGRP, `tag 200` when redistributing EIGRP→OSPF. Add `route-map DENY_RETURNING_TAG` on each ASBR to block re-injection.
+3. Verify correct metric-type (`metric-type 1` vs `2`) and seed metrics.
+4. **Optional IS-IS variant:** swap EIGRP for IS-IS on FRR containers — proves the technique is vendor-neutral. The tag mechanism is identical.
 
 **Prove it:**
-- `show eigrp protocols` shows named-mode + SHA-256.
-- `show ip eigrp neighbors detail` shows authentication mode.
-- During the SIA test, `show ip eigrp topology active` lists the problem; after the fix, no SIA.
+- `show ip route ospf` on the EIGRP side shows E2 routes with tag 200.
+- No "ghost" EIGRP routes originating via the OSPF path in `show ip route eigrp`.
+- Shut a redistribution link — no microloop during convergence.
+
+**Admin-distance comparison table (write in your notes):**
+
+| Protocol | Cisco AD | MikroTik distance | Juniper preference |
+|---|---|---|---|
+| Connected | 0 | 0 | 0 |
+| Static | 1 | 1 | 5 |
+| eBGP | 20 | 20 | 170 |
+| OSPF intra | 110 | 110 | 10 |
+| IS-IS L1 | 115 | 115 | 15 |
+| EIGRP internal | 90 | — | — |
+| iBGP | 200 | 200 | 170 |
+
+---
+
+## Lab 4 — EIGRP Deep: Named-Mode (Week 4)
+
+**GNS3vault labs** (`gns3vault-archive/EIGRP/`) — start with these three before the named-mode extension:
+
+| Lab | What to do |
+|---|---|
+| [eigrp-basic](https://github.com/networklessons/labs/tree/main/gns3vault-archive/EIGRP/eigrp-basic) | Classic-mode EIGRP baseline, DUAL verification. |
+| [eigrp-authentication](https://github.com/networklessons/labs/tree/main/gns3vault-archive/EIGRP/eigrp-authentication) | MD5 key-chain — foundation before SHA upgrade. |
+| [eigrp-summarization](https://github.com/networklessons/labs/tree/main/gns3vault-archive/EIGRP/eigrp-summarization) | Summarization, auto-summary disable, discard route. |
+
+**Named-mode extension (hand-written):** GNS3vault uses classic-mode EIGRP. Rebuild the `eigrp-basic` topology in named-mode:
+
+**Tasks:**
+1. Convert to named-mode: `router eigrp LAB4` / `address-family ipv4 unicast autonomous-system 100` / `address-family ipv6 unicast autonomous-system 100`. Both AFs on a single adjacency.
+2. Replace MD5 authentication with SHA-256 key-chain (requires named-mode). Rotate one key mid-lab — confirm zero downtime.
+3. Configure stub routing on spokes: `eigrp stub connected summary`. Verify the hub receives only stub-type queries.
+4. **SIA scenario:** on a stub spoke, remove a route from the RIB manually with a `null0` static. On the active querying router, observe `show ip eigrp topology active`. Fix with proper stub configuration.
+
+**Prove it:**
+- `show eigrp protocols` shows named-mode, AF IPv4 + IPv6.
+- `show ip eigrp neighbors detail` shows SHA-256 auth mode.
+- `show ip eigrp topology active` is clean after the fix.
 
 ---
 
 ## Lab 5 — OSPFv3 with Address Families (Week 5)
 
-**Topology:** 3 vIOS L3 in a triangle, dual-stack.
+**GNS3vault labs** (`gns3vault-archive/OSPF/`) — complete these first as the OSPFv2 foundation:
+
+| Lab | What to do |
+|---|---|
+| [ospf-authentication](https://github.com/networklessons/labs/tree/main/gns3vault-archive/OSPF/ospf-authentication) | Authentication mechanics — key-chain concept. |
+| [ospf-nssa-not-so-stubby-area](https://github.com/networklessons/labs/tree/main/gns3vault-archive/OSPF/ospf-nssa-not-so-stubby-area) | NSSA Type-7/Type-5 conversion — needed in the OSPFv3 lab too. |
+| [ospf-virtual-link](https://github.com/networklessons/labs/tree/main/gns3vault-archive/OSPF/ospf-virtual-link) | Virtual link mechanics — you'll recreate the problem in OSPFv3 too. |
+
+**OSPFv3 address-family lab (hand-written):** GNS3vault has no OSPFv3 AF lab.
+
+**Topology:** 3 CSR1000v in a triangle, dual-stack (`10.X.0.0/24` + `fd00:X::/64`).
 
 **Tasks:**
-1. Configure **OSPFv3 with IPv4 + IPv6 address families** on a single process — single adjacency carries both.
-2. Enable key-chain authentication (SHA-256) — mandatory for OSPFv3 in modern IOS.
-3. Build a Type 7 → Type 5 NSSA scenario: one router is an ASBR injecting external routes from a static; the other ABR translates type-7 into type-5.
-4. **FRR cross-check:** same triangle on FRR; observe identical LSAs.
+1. Single OSPFv3 process with two AFs: `address-family ipv4 unicast` and `address-family ipv6 unicast`. One adjacency carries both.
+2. SHA-256 key-chain authentication (mandatory for OSPFv3 in modern IOS — no plain-text option).
+3. Build a NSSA on one router: ASBR injects an external static; ABR translates Type-7 → Type-5. Verify with `show ospfv3 ipv4 database nssa-external` vs `show ospfv3 ipv4 database external`.
+4. **FRR cross-check:** same triangle on FRR Docker containers. Confirm identical LSA behavior — write a one-paragraph diff in your notes on any CLI differences.
 
 **Prove it:**
-- `show ospfv3 ipv4 neighbor` and `show ospfv3 ipv6 neighbor` both show full adjacency.
-- `show ospfv3 ipv4 database nssa-external` on the NSSA ABR; `show ospfv3 ipv4 database external` on the backbone.
+- `show ospfv3 ipv4 neighbor` and `show ospfv3 ipv6 neighbor` both show Full.
+- Both AFs show correct routes in `show ip route ospf` and `show ipv6 route ospf`.
 
 ---
 
 ## Lab 6 — OSPF Network Types, Areas, Virtual Links (Week 6)
 
-**Topology:** 5 vIOS L3 — one acting as an NBMA hub, three as spokes, one as a backbone-disconnected ABR (for the virtual-link drill).
+**GNS3vault labs** (`gns3vault-archive/OSPF/`) — these cover the full week:
 
-**Tasks:**
-1. Build a **point-to-multipoint** OSPF over an NBMA-like topology (sub-interfaces or GRE).
-2. Compare with **broadcast** and **point-to-point** modes on the same topology — note DR/BDR election differences.
-3. Place an area-3 "behind" area-2 (no direct connection to area 0). Bring it up via a **virtual link** through area-2.
-4. Redesign the topology to **remove the virtual link** (add a physical or GRE link between area-3 ABR and area-0).
-5. NSSA test: convert area-3 to NSSA; inject an external via `redistribute static subnets`; confirm Type-7 → Type-5 conversion at the area-3 ABR.
+| Lab | What to do |
+|---|---|
+| [ospf-stub-area](https://github.com/networklessons/labs/tree/main/gns3vault-archive/OSPF/ospf-stub-area) | Stub area — LSA type 5 filtered. |
+| [ospf-totally-stub](https://github.com/networklessons/labs/tree/main/gns3vault-archive/OSPF/ospf-totally-stub) | Totally stubby — type 3 + 5 filtered. |
+| [ospf-nssa-not-so-stubby-area](https://github.com/networklessons/labs/tree/main/gns3vault-archive/OSPF/ospf-nssa-not-so-stubby-area) | NSSA — Type-7 to Type-5 conversion. |
+| [ospf-totally-nssa](https://github.com/networklessons/labs/tree/main/gns3vault-archive/OSPF/ospf-totally-nssa) | Totally NSSA — all filtering combined. |
+| [ospf-virtual-link](https://github.com/networklessons/labs/tree/main/gns3vault-archive/OSPF/ospf-virtual-link) | Virtual link — connect discontiguous area-0. |
+| [ospf-lsa-type-3-summarization](https://github.com/networklessons/labs/tree/main/gns3vault-archive/OSPF/ospf-lsa-type-3-summarization) | ABR summarization. |
+| [ospf-lsa-type-5-summarization](https://github.com/networklessons/labs/tree/main/gns3vault-archive/OSPF/ospf-lsa-type-5-summarization) | ASBR summarization. |
 
-**Prove it:**
-- `show ip ospf neighbor` shows expected DR/BDR (or no DR) per network type.
-- `show ip ospf virtual-links` then **absent** after redesign.
-- `show ip ospf database external` on backbone shows the redistributed prefix as type-5.
+**Network types extension (hand-written):** GNS3vault Frame-Relay network-type labs are obsolete. Build this instead on vIOS-L3:
+
+**Topology:** 1 hub + 3 spokes using sub-interfaces to simulate NBMA. Apply each network type in sequence and note the DR/BDR behavior:
+
+| Network type | DR elected? | Hello/dead | When to use |
+|---|---|---|---|
+| broadcast | yes | 10/40 | Ethernet |
+| non-broadcast | yes | 30/120 | legacy NBMA |
+| point-to-multipoint | no | 30/120 | hub-spoke, no DR needed |
+| point-to-point | no | 10/40 | any p2p link |
+
+Then redesign the virtual-link topology from `ospf-virtual-link` to **remove** the virtual link entirely — add a physical or GRE link between the disconnected ABR and area-0. Write in your notes why virtual links are an anti-pattern in production.
 
 ---
 
 ## Lab 7 — IS-IS L1/L2 Backbone (Week 7)
 
-**Topology:** 4 FRR containers + 2 vIOS L3 (or Juniper vMX if you have it). Two areas: `49.0001` (L1) and `49.0002` (L2).
+**GNS3vault coverage:** minimal. The archive has no usable IS-IS labs for modern IOS. Use FRR containers instead — IS-IS is identical conceptually across vendors.
+
+**Topology:** 4 FRR Docker containers + 2 vIOS-L3. Two areas: `49.0001` (L1 only) and `49.0002` (backbone L2). Two L1/L2 routers bridge the areas.
 
 **Tasks:**
-1. Configure NETs on all routers (`49.0001.0000.0000.0001.00`, `49.0001.0000.0000.0002.00`, etc.).
-2. Set router types: 2 routers `level-1`, 2 routers `level-2`, 2 routers `level-1-2`.
-3. Use **wide metrics** everywhere (modern default).
-4. Configure SHA-256 hello authentication.
-5. Leak selected L2 → L1 routes with a route-policy.
+1. Configure NETs on all routers (`49.0001.0000.0000.0001.00` etc.). Enable `router isis` on FRR (`net 49.0001.0000.0000.0001.00`), `router isis` on IOS.
+2. Set router types: two routers `is-type level-1`, two `is-type level-2-only`, two `is-type level-1-2`.
+3. Use **wide metrics** everywhere: `metric-style wide` on IOS, `metric-style wide` on FRR.
+4. SHA-256 hello authentication: `authentication key-chain IS-IS-AUTH` on IOS; `isis authentication mode md5` on FRR (FRR supports MD5 only — note the gap).
+5. Leak selected L2 → L1 routes with a route-map on the L1/L2 routers.
 6. Insert a deliberate metric tie; resolve with manual metric tuning.
 
 **Prove it:**
-- `show isis neighbors` on each router shows expected adjacencies.
-- `show isis database detail` shows TLV-extended IS reachability (wide metrics).
-- `show ip route isis` on an L1-only router shows only intra-area + a default toward L1/L2.
+- `show isis neighbors` shows expected L1/L2 adjacencies.
+- `show isis database detail` shows TLV-extended IS reachability (wide metrics active).
+- An L1-only router's `show ip route isis` shows only intra-area routes + a default toward the L1/L2 router.
+
+**Notes to write:** compare IS-IS area model vs OSPF area model — specifically why IS-IS has no Area-0 constraint and why that matters for large flat backbones.
 
 ---
 
 ## Lab 8 — BGP Address Families, RR, and Filtering (Week 8)
 
-**Topology:** 3 ASes — `AS 65010` (left ISP, 2 routers), `AS 65020` (transit core, 3 routers with one route-reflector), `AS 65030` (right ISP, 2 routers).
+**GNS3vault labs** (`gns3vault-archive/BGP/`) — this is where the archive is richest. Do these in order:
 
-**Tasks:**
-1. eBGP between ASes (multihop where needed); iBGP inside AS 65020 with one **route reflector**; clients reflect to one another.
-2. Activate **`address-family ipv4 unicast`** and **`address-family ipv6 unicast`** on every neighbor.
-3. AS-path regex filtering: block any path containing `_64500_` (private AS leakage).
-4. Communities: tag inbound from one peer with `65020:100`; outbound, deny anything tagged `65020:200`.
-5. Implement **outbound route-filtering** (ORF) between two peers and verify the filter is pushed.
-6. **Local-pref / MED / weight** lab: produce a sub-optimal path with default values; fix it three different ways and record which is appropriate.
+| Lab | What to do |
+|---|---|
+| [bgp-basic](https://github.com/networklessons/labs/tree/main/gns3vault-archive/BGP/bgp-basic) | Baseline — session, network advertisement. |
+| [ibgp-internal-bgp](https://github.com/networklessons/labs/tree/main/gns3vault-archive/BGP/ibgp-internal-bgp) | iBGP full mesh, next-hop behavior. |
+| [bgp-next-hop-self](https://github.com/networklessons/labs/tree/main/gns3vault-archive/BGP/bgp-next-hop-self) | `next-hop-self` — why it's needed on iBGP. |
+| [bgp-route-reflectors](https://github.com/networklessons/labs/tree/main/gns3vault-archive/BGP/bgp-route-reflectors) | RR + client config. Verify cluster-list and originator-id. |
+| [bgp-attribute-local-preference](https://github.com/networklessons/labs/tree/main/gns3vault-archive/BGP/bgp-attribute-local-preference) | LOCAL_PREF — AS-wide scope. |
+| [bgp-attribute-as-path](https://github.com/networklessons/labs/tree/main/gns3vault-archive/BGP/bgp-attribute-as-path) | AS-path prepending — influence inbound. |
+| [bgp-attribute-med](https://github.com/networklessons/labs/tree/main/gns3vault-archive/BGP/bgp-attribute-med) | MED — inter-AS metric. |
+| [bgp-attribute-weight](https://github.com/networklessons/labs/tree/main/gns3vault-archive/BGP/bgp-attribute-weight) | Weight — local-router only. |
+| [bgp-communities](https://github.com/networklessons/labs/tree/main/gns3vault-archive/BGP/bgp-communities) | Standard communities. |
+| [bgp-communities-no-export](https://github.com/networklessons/labs/tree/main/gns3vault-archive/BGP/bgp-communities-no-export) | `no-export` well-known community. |
+| [bgp-as-path-access-list](https://github.com/networklessons/labs/tree/main/gns3vault-archive/BGP/bgp-as-path-access-list) | AS-path regex — block private AS leakage. |
+| [bgp-peer-group](https://github.com/networklessons/labs/tree/main/gns3vault-archive/BGP/bgp-peer-group) | Peer groups — operational efficiency. |
 
-**Prove it:**
-- `show bgp ipv4 unicast summary` and `show bgp ipv6 unicast summary` both show all peers Established.
-- `show bgp ipv4 unicast neighbors X received-routes` on a client confirms RR cluster-list and originator-id.
-- `show bgp regexp _64500_` returns nothing on the receiving side.
+**IPv6 AF extension (hand-written):** GNS3vault BGP labs are IPv4 only. After the labs above, extend your topology:
+
+Add `address-family ipv6 unicast` to every peer. Use link-local next-hops where applicable (`neighbor X update-source GigE0/1`). Confirm with `show bgp ipv6 unicast summary`.
 
 ---
 
 ## Lab 9 — BGP Troubleshooting Gauntlet (Week 9)
 
-**Setup:** start with the Lab 8 topology, **broken** by your friend (or your past self via a saved-but-mangled config).
+**GNS3vault labs** — use these as a foundation, then build the gauntlet yourself:
 
-**Six bugs to find and fix (one each):**
-1. TCP/179 dropped by an ACL on a transit router.
-2. eBGP multihop missing for a loopback-sourced peering.
-3. `update-source Loopback0` set on one side only.
-4. MD5 password mismatch between peers.
-5. iBGP RR client missing `next-hop-self` for an external route → black hole.
-6. Outbound route-map silently denying a prefix that should be advertised.
+| Lab | Purpose |
+|---|---|
+| [bgp-ebgp-multihop](https://github.com/networklessons/labs/tree/main/gns3vault-archive/BGP/bgp-ebgp-multihop) | Covers the multihop failure mode. |
+| [bgp-update-source](https://github.com/networklessons/labs/tree/main/gns3vault-archive/BGP/bgp-update-source) | Covers the update-source mismatch failure mode. |
+| [bgp-md5-authentication](https://github.com/networklessons/labs/tree/main/gns3vault-archive/BGP/bgp-md5-authentication) | Covers the MD5 mismatch failure mode. |
 
-**Tasks:**
-1. For each bug, **first** predict the symptom from the BGP state machine (`Idle / Connect / Active / OpenSent / OpenConfirm / Established`).
-2. Identify with the **minimum** set of commands (`show bgp summary`, `show bgp neighbor X`, `debug bgp ipv4 unicast updates`).
-3. Document the fix in your notes.
-4. After all 6 are fixed: extend the topology to **dual-stack** — add `ipv6 unicast` everywhere, eBGP IPv6 peering, link-local next-hops with `neighbor X update-source GigE0/0`.
+**Gauntlet (hand-written extension):** take the Lab 8 topology and break it six ways, one at a time. For each bug, predict the BGP state machine state first, then diagnose:
 
-**Prove it:** every neighbor reaches `Established`; full IPv4 + IPv6 connectivity confirmed by `ping vrf X X.X.X.X source Loopback0`.
+1. TCP/179 blocked by an ACL on a transit router → session stuck in `Active`.
+2. eBGP multihop missing for loopback-sourced peering → `Idle`.
+3. `update-source Loopback0` set on one side only → `Active`.
+4. MD5 password mismatch → `Active` (TCP connects, Open rejected).
+5. iBGP RR client missing `next-hop-self` → session `Established` but routes black-holed.
+6. Outbound route-map silently denying a prefix → session up, prefix missing from peer's table.
+
+For each: write the minimum diagnostic command sequence in your notes. These become your BGP troubleshooting runbook.
 
 ---
 
 ## Lab 10 — MPLS L3VPN End-to-End (Week 10)
 
-**Topology:** 4-router MPLS core (P1-P2 in the middle, PE1-PE2 at the edges) + 4 CE routers (2 per VRF — `VPN_RED` and `VPN_BLUE`).
+**GNS3vault labs** (`gns3vault-archive/MPLS/`) — the archive has solid MPLS coverage:
 
-**Tasks:**
-1. Underlay: OSPF on all core links; LDP enabled with `mpls ip` on every core interface; LDP router-id = Loopback0.
-2. Verify label distribution: `show mpls ldp neighbor`, `show mpls forwarding-table`.
-3. Define VRFs on PEs: `VPN_RED` (RD 65000:10, RT 65000:10), `VPN_BLUE` (RD 65000:20, RT 65000:20).
-4. PE-CE protocol: OSPF for `VPN_RED`, eBGP for `VPN_BLUE` (cover both).
-5. MP-BGP VPNv4 between PE loopbacks: `address-family vpnv4 unicast`; `send-community extended` mandatory.
-6. Prove route isolation: overlap `10.0.0.0/24` in both VRFs.
-7. **Stretch:** add IPv6 — repeat as `address-family vpnv6 unicast`, 6VPE-style.
-8. **Juniper cross-check (optional):** swap one PE for vMX. RSVP-TE vs LDP, but the L3VPN concepts are identical.
+| Lab | What to do |
+|---|---|
+| [mpls-ldp](https://github.com/networklessons/labs/tree/main/gns3vault-archive/MPLS/mpls-ldp) | LDP basics — label distribution, LFIB, FIB. Verify with `show mpls ldp neighbor` and `show mpls forwarding-table`. |
+| [vrf-lite](https://github.com/networklessons/labs/tree/main/gns3vault-archive/MPLS/vrf-lite) | VRF review if needed — RD/RT mechanics. |
+| [basic-mpls-vpn](https://github.com/networklessons/labs/tree/main/gns3vault-archive/MPLS/basic-mpls-vpn) | Core L3VPN lab — PE-CE with static routes, MP-BGP VPNv4, RT import/export. |
+| [mpls-vpn-pe-ce-using-ospf](https://github.com/networklessons/labs/tree/main/gns3vault-archive/MPLS/mpls-vpn-pe-ce-using-ospf) | PE-CE using OSPF — important for the capstone. |
+
+**Extensions (hand-written):** after the GNS3vault labs:
+
+1. Add a second VRF (`VPN_BLUE`) with eBGP as PE-CE protocol instead of OSPF. This gives you both PE-CE options in one topology — important for the Week 16 capstone.
+2. Prove route isolation: overlap `10.0.0.0/24` in both VRFs. Verify `show bgp vpnv4 unicast all` shows distinct RDs.
+3. **Stretch — 6VPE:** add `address-family vpnv6 unicast` to both PEs. Configure IPv6 CEs. Verify `show bgp vpnv6 unicast all`.
+4. **Juniper cross-check (optional):** swap one PE for vMX. CLI differs; RSVP-TE vs LDP differs; L3VPN concept is identical. Write a one-page CLI comparison in your notes.
 
 **Prove it:**
 - `show bgp vpnv4 unicast all summary` — both PE peers Established.
-- `show mpls forwarding-table` on a P router shows label-stack imposition for VPN prefixes.
-- `traceroute vrf VPN_RED 10.0.0.X` from one CE site shows the MPLS label in the output.
+- `show mpls forwarding-table` on a P router shows label stacks.
+- `traceroute vrf VPN_RED 10.0.0.X` from a CE shows MPLS labels in output.
 
 ---
 
 ## Lab 11 — DMVPN + IPsec (Week 11)
 
-**Topology:** 1 hub + 3 spokes, all CSR1000v. Add 1 MikroTik CHR as a 4th spoke (Phase 1 only — MikroTik DMVPN compatibility is limited).
+**GNS3vault coverage:** the archive has GRE and IPsec labs but no DMVPN. Use the GNS3vault IPsec labs as a warm-up, then build DMVPN from scratch.
+
+**GNS3vault warm-up** (`gns3vault-archive/Tunneling/`):
+
+| Lab | What to do |
+|---|---|
+| [gre-tunnel-basic](https://github.com/networklessons/labs/tree/main/gns3vault-archive/Tunneling/gre-tunnel-basic) | GRE recap — mGRE is an extension of this. |
+| [gre-over-ipsec](https://github.com/networklessons/labs/tree/main/gns3vault-archive/Tunneling/gre-over-ipsec) | GRE+IPsec mechanics — the template for DMVPN phase 1. |
+| [site-to-site-ipsec-vpn](https://github.com/networklessons/labs/tree/main/gns3vault-archive/Tunneling/site-to-site-ipsec-vpn) | Plain IPsec — verify IKEv1 SA establishment before upgrading to IKEv2. |
+
+**DMVPN hand-written lab:**
+
+**Topology:** 1 hub CSR1000v + 3 spoke CSR1000v. Add 1 MikroTik CHR as a 4th spoke for Phase 1 only (MikroTik DMVPN interop is IKEv1/Phase-1 only; document the limitation).
 
 **Tasks:**
-1. Build **DMVPN Phase 1** (hub-and-spoke only): mGRE on hub, p2p GRE on spokes, NHRP NHS on spokes, EIGRP across the tunnel with `no ip split-horizon eigrp`.
-2. Upgrade to **Phase 2** — spoke-to-spoke tunnels via NHRP resolution requests.
-3. Upgrade to **Phase 3** — NHRP shortcut + redirect; spoke-to-spoke triggered by hub redirect.
-4. Apply **IPsec protection** to the mGRE tunnels: IKEv2, PSK first then certificate-based (use a quick CA on an Alpine VM if you have one).
-5. Verify spoke-to-spoke direct flow with `show dmvpn detail`, `show crypto session detail`, and a packet capture on the hub's transport interface (should see traffic between spokes go **direct**, not via hub).
-6. **MikroTik cross-check:** site-to-site **IPsec** (no DMVPN) between two CHRs — IKEv2, AES-256-GCM, SHA-256, DH group 19. Compare the conceptual flow.
+1. **Phase 1** — hub-and-spoke only. Hub: `tunnel mode gre multipoint`, NHRP NHS config. Spokes: `tunnel destination` = hub, NHRP NHS = hub. EIGRP across tunnel with `no ip split-horizon eigrp` on hub.
+2. **Phase 2** — enable NHRP redirect on hub, NHRP shortcut on spokes. Verify spoke-to-spoke tunnel formation with `show dmvpn detail`.
+3. **Phase 3** — NHRP shortcut + redirect on hub. Spoke-to-spoke triggered by hub redirect. Confirm traffic bypasses hub: capture on hub's transport interface during a spoke-to-spoke ping — hub should see only the NHRP redirect, not the data traffic.
+4. **IPsec protection:** IKEv2 + PSK over the mGRE tunnels. Later, replace PSK with certificates (Alpine VM as CA if available).
+5. **MikroTik cross-check:** site-to-site IPsec between two CHRs — IKEv2, AES-256-GCM, SHA-256, DH group 19. No DMVPN — just the IPsec part. Compare the conceptual IKE phase flow with your Cisco notes.
 
 **Prove it:**
 - `show ip nhrp` on a spoke shows dynamic entries for other spokes (Phase 2/3).
-- `show crypto ikev2 sa detailed` shows the IKEv2 SAs.
-- Capture on hub shows tunnel traffic bypassing it in Phase 3.
+- `show crypto ikev2 sa detailed` shows active IKEv2 SAs.
+- Packet capture on hub's WAN interface: spoke-to-spoke traffic absent after Phase 3 shortcut established.
 
 ---
 
-## Lab 12 — Infrastructure Hardening (Week 12)
+## Lab 12 — Infrastructure Security (Week 12)
 
-**Topology:** any topology you have; 1 CSR1000v + 1 vIOS L2 + 1 Alpine VM running FreeRADIUS and tac_plus.
+**GNS3vault labs** (`gns3vault-archive/Security/`) — the archive is strong here:
+
+| Lab | What to do |
+|---|---|
+| [aaa-authentication](https://github.com/networklessons/labs/tree/main/gns3vault-archive/Security/aaa-authentication) | RADIUS + TACACS+ auth, local fallback. |
+| [aaa-command-authorization](https://github.com/networklessons/labs/tree/main/gns3vault-archive/Security/aaa-command-authorization) | Command authorization — two privilege tiers. |
+| [aaa-exec-authorization](https://github.com/networklessons/labs/tree/main/gns3vault-archive/Security/aaa-exec-authorization) | EXEC authorization. |
+| [standard-access-list](https://github.com/networklessons/labs/tree/main/gns3vault-archive/Security/standard-access-list) | ACL refresher. |
+| [extended-access-list](https://github.com/networklessons/labs/tree/main/gns3vault-archive/Security/extended-access-list) | Extended ACL. |
+| [reflexive-access-list](https://github.com/networklessons/labs/tree/main/gns3vault-archive/Security/reflexive-access-list) | Reflexive ACL — stateful inspection precursor. |
+| [unicast-reverse-path-forwarding-urpf](https://github.com/networklessons/labs/tree/main/gns3vault-archive/Security/unicast-reverse-path-forwarding-urpf) | uRPF strict vs loose mode. |
+| [control-place-policing](https://github.com/networklessons/labs/tree/main/gns3vault-archive/Security/control-place-policing) | CoPP — MQC for the control plane. |
+| [basic-zone-based-firewall](https://github.com/networklessons/labs/tree/main/gns3vault-archive/Security/basic-zone-based-firewall) | ZBF — zone pairs, policy-map inspect, self zone. |
+
+**IPv6 FHS extension (hand-written):** GNS3vault has no IPv6 FHS lab. Build on vIOS-L2 access segment:
 
 **Tasks:**
-1. **AAA stack:** TACACS+ for admin (login + command authorization, two privilege levels); RADIUS for 802.1X on a switchport.
-2. Configure **AAA method-lists** with fallback to local.
-3. **Control-plane policing (CoPP):** named classes for:
-   - `MANAGEMENT` (SSH, NTP, SNMP, syslog)
-   - `ROUTING` (OSPF, BGP, EIGRP, LDP)
-   - `UNDESIRABLE` (ICMP redirects, IP options, fragments)
-   - `CATCH_ALL` (everything else — rate-limit aggressively)
-4. **IPv6 First-Hop Security** on the vIOS L2 access segment:
-   - **RA Guard** with `device-role host` on host ports
-   - **DHCPv6 Guard** with `device-role server` only on the uplink to the DHCPv6 server
-   - **IPv6 Snooping** policy applied to the access VLAN
-   - **IPv6 Source Guard** on host ports
-5. **Hardening checklist:** disable HTTP/HTTPS server, `no ip source-route`, `service password-encryption`, `no service pad`, `login block-for 60 attempts 3 within 30`, `transport input ssh`, banner motd.
+1. **RA Guard:** `ipv6 nd raguard policy HOST` / `device-role host` on access ports. Send a rogue RA from a host port — blocked. Confirm with `show ipv6 snooping events`.
+2. **DHCPv6 Guard:** `ipv6 dhcp guard policy SERVER` / `device-role server` only on the uplink to the DHCPv6 server. Rogue DHCPv6 offer from a host port — dropped.
+3. **IPv6 Snooping:** `ipv6 snooping policy SNOOP` applied to the access VLAN. Verify binding table with `show ipv6 neighbors binding`.
+4. **IPv6 Source Guard:** `ipv6 source-guard policy SGP` on host ports. Host with spoofed IPv6 source — dropped.
 
-**Prove it:**
-- Login as one TACACS+ user → can run `show` only; another can configure.
-- Send a flood of malformed packets at the management interface → CoPP drops them; counters increment in `show policy-map control-plane`.
-- Spoof a rogue RA from a host port → blocked; `show ipv6 snooping events` lists the drop.
+**CoPP extension:** after the GNS3vault CoPP lab, build a production-grade 4-class policy on a CSR1000v:
+
+```
+class MANAGEMENT  → SSH, SNMP, NTP, TACACS+ — police 64 kbps
+class ROUTING     → OSPF, BGP, EIGRP, LDP hello — police 256 kbps
+class UNDESIRABLE → ICMP redirects, IP options, fragments — police 8 kbps
+class default     → everything else — police 1 Mbps
+```
+
+Verify: send a flood of malformed packets at the management interface — `show policy-map control-plane` shows drops incrementing in the right class.
 
 ---
 
 ## Lab 13 — Telemetry & Services Stack (Week 13)
 
-**Topology:** any 4-router topology + an Alpine/Debian VM running **Docker** with Prometheus + Grafana + LibreNMS + ntopng + Akvorado (or just `nfdump`).
+**GNS3vault labs** (`gns3vault-archive/Network Management/`) — good coverage of the classical stack:
 
-**Tasks:**
-1. **SNMPv3** with auth+priv (SHA + AES-128) to LibreNMS; add all routers; verify interface graphs.
-2. **NetFlow v9** on every router exporting to ntopng on port 2055; add **Flexible NetFlow** with a custom record (src/dst IP, ports, TOS, BGP next-hop).
-3. **IP SLA** UDP-jitter probe between two routers; **track** the SLA state; have a static-route conditional on tracker state; tear the path, verify failover.
-4. **DHCP relay across VRFs:** DHCPv4 server in VRF `MGMT`, clients in VRF `CUST_A`; configure `ip helper-address vrf MGMT 10.X.X.X global` on the SVI; confirm leases via `show ip dhcp binding`.
-5. **gNMI subscription** (stretch): use `gnmic` from the Alpine VM to subscribe to `/interfaces/interface/state/counters` on the CSR1000v; output to Prometheus; build a Grafana dashboard.
+| Lab | What to do |
+|---|---|
+| [snmpv2-server](https://github.com/networklessons/labs/tree/main/gns3vault-archive/Network%20Management/snmpv2-server) + [snmpv3-server](https://github.com/networklessons/labs/tree/main/gns3vault-archive/Network%20Management/snmpv3-server) | Both back-to-back. Compare config complexity. |
+| [syslog-server-logging](https://github.com/networklessons/labs/tree/main/gns3vault-archive/Network%20Management/syslog-server-logging) + [system-message-logging](https://github.com/networklessons/labs/tree/main/gns3vault-archive/Network%20Management/system-message-logging) | Remote + local logging, severity levels. |
+| [ntp-network-time-protocol](https://github.com/networklessons/labs/tree/main/gns3vault-archive/Network%20Management/ntp-network-time-protocol) | NTP server + client, stratum, authentication. |
+| [ip-service-level-agreement-sla](https://github.com/networklessons/labs/tree/main/gns3vault-archive/Network%20Services/ip-service-level-agreement-sla) | IP SLA probes. |
+| [kron-task-scheduler](https://github.com/networklessons/labs/tree/main/gns3vault-archive/Network%20Management/kron-task-scheduler) | Scheduled config tasks — production-relevant. |
+
+**Modern telemetry extensions (hand-written):** GNS3vault is too old for these. Build on a CSR1000v + Docker VM:
+
+1. **SNMPv3 → LibreNMS:** point LibreNMS (running in Docker) at your CSR1000v. Add all routers. Verify interface graphs appear.
+2. **NetFlow v9 → ntopng:** `flow exporter` on the CSR, export to ntopng on port 2055. Add Flexible NetFlow with a custom record (src/dst IP, ports, TOS, BGP next-hop). View top-talkers per AS.
+3. **IP SLA + track + failover:** UDP-jitter probe between two routers. `track 1 ip sla 1 reachability`. Floating static conditional on track state. Pull the primary link — verify static route switches within the SLA reaction time.
+4. **DHCP relay across VRFs:** DHCPv4 server in VRF `MGMT`, clients in VRF `CUST_A`. `ip helper-address vrf MGMT X.X.X.X global` on the SVI. Confirm leases: `show ip dhcp binding`.
+5. **gNMI subscription (stretch):** install `gnmic` on the Docker VM. Subscribe to `/interfaces/interface/state/counters` on the CSR1000v. Pipe output to Prometheus. Build a Grafana panel showing real-time interface counters.
 
 **Prove it:**
-- LibreNMS dashboard shows traffic graphs from every device.
-- ntopng / Akvorado shows top-talkers per AS.
-- Pull primary link → IP SLA tracker flaps → static route swaps in `show ip route`.
-- Grafana panel shows real-time interface counter from gNMI.
+- LibreNMS shows traffic graphs from every device.
+- ntopng shows top-talkers per AS from NetFlow.
+- Pull primary link → IP SLA tracker flaps → `show ip route` shows standby static activated.
+- Grafana panel shows live counter increments from gNMI.
 
 ---
 
-## Lab 14 — Skim DNAC Assurance / Finish Design (Week 14)
+## Lab 14 — Design Concepts (Week 14)
 
-No new EVE-NG topology. **One** activity:
+No new EVE-NG topology. **One structured activity:**
 
-**Walk the Library C design modules with a notebook:**
-- `10. Design High Availability in Campus Networks`
-- `12. Design Campus L2 Infrastructures`
-- `13. Design Multicampus L3 Infrastructures`
-- `24. Multicast Routing Foundations and Design`
-- `14./15. SD-Access architecture/fabric` (concepts only)
-- `19./20. SD-WAN architecture/design` (concepts only)
+Walk the Library C design modules with a notebook. For each module, draw the reference architecture on paper. Then, for every Cisco-proprietary concept, write its vendor-neutral / open-source equivalent:
 
-For each, draw the **reference architecture** on paper. Then, **for each Cisco-SDA / SD-WAN concept, write its EVPN-VXLAN / open-source equivalent** (e.g., "fabric edge = VTEP", "LISP control-plane node = BGP-EVPN route-reflector", "vSmart = open-source SD-WAN controller like flexiWAN").
+| Cisco concept | Vendor-neutral equivalent |
+|---|---|
+| SD-Access fabric edge | VTEP (EVPN-VXLAN) |
+| LISP control-plane node | BGP-EVPN route-reflector |
+| DNA Center | OpenConfig + Prometheus + NetBox |
+| vSmart (SD-WAN) | Open-source SD-WAN controller (flexiWAN, VyOS-based) |
+| DMVPN NHS | WireGuard hub, strongSwan IKEv2 server |
+| MP-BGP VPNv4 | Same — it's an IETF standard, all vendors implement it |
 
-This is the most leveraged hour of the week — translating proprietary terminology into vendor-neutral concepts is **the** senior-network-engineer skill.
+This translation exercise is more valuable than any CLI lab this week. Senior engineers think in concepts, not vendor menus.
 
 ---
 
 ## Lab 15 — Automation Build Week (Week 15)
 
-**Goal:** stand up a real, working `network-automation` Git repo. **No video.**
+No video. The entire week is building a working `network-automation` Git repo.
 
-**Build order:**
-1. **Repo structure:**
-   ```
-   network-automation/
-     inventory/
-       hosts.yaml          # Nornir host inventory
-       groups.yaml         # vendor groups: cisco_iosxe, mikrotik_routeros, juniper_junos
-     playbooks/
-       backup.yaml         # Ansible
-       gather_state.py     # Nornir + NAPALM
-     scripts/
-       netconf_pull.py     # ncclient
-       restconf_pull.py    # requests
-       gnmic_subscribe.sh  # gnmic
-     telemetry/
-       prometheus.yml
-       grafana_dashboards/
-     Makefile              # `make backup`, `make report`, `make telemetry`
-     README.md
-   ```
-2. **Day 1:** install `python3-venv`, create venv, `pip install nornir nornir-napalm nornir-utils nornir-netmiko ansible netmiko napalm ncclient pygnmi requests pyang`.
-3. **Day 2:** `make backup` — Nornir+NAPALM pulls running configs from every device and commits to a `configs/` subdirectory with timestamps.
-4. **Day 3:** `make report` — Nornir+NAPALM pulls interface error counters and outputs a Markdown report.
-5. **Day 4:** `netconf_pull.py` — pull `/ietf-routing:routing/control-plane-protocols` from a CSR1000v; pretty-print the OSPF neighbor list.
-6. **Day 5:** `restconf_pull.py` — same data via RESTCONF + JSON; compare API ergonomics.
-7. **Day 6:** `gnmic_subscribe.sh` — subscribe to interface counters; stream to Prometheus; Grafana dashboard.
-8. **Day 7:** **Ansible role** that deploys a NEW VRF + OSPF process to a Cisco IOS-XE device and a MikroTik CHR with the same Ansible playbook (vendor-conditional tasks).
+**Repo structure:**
+```
+network-automation/
+  inventory/
+    hosts.yaml          # Nornir host inventory
+    groups.yaml         # cisco_iosxe, mikrotik_routeros, juniper_junos
+  playbooks/
+    backup.yaml         # Ansible
+    gather_state.py     # Nornir + NAPALM
+  scripts/
+    netconf_pull.py     # ncclient — pull OSPF neighbors
+    restconf_pull.py    # requests — same data via REST
+    gnmic_subscribe.sh  # gnmic → Prometheus
+  telemetry/
+    prometheus.yml
+    grafana_dashboards/
+  Makefile              # make backup, make report, make telemetry
+  README.md
+```
+
+**Day-by-day build order:**
+
+| Day | Task |
+|---|---|
+| 1 | `python3 -m venv .venv`, install: `nornir nornir-napalm nornir-utils nornir-netmiko ansible netmiko napalm ncclient requests pyang gnmic`. First `git commit`. |
+| 2 | `make backup` — Nornir+NAPALM pulls running configs from every device. Commits to `configs/` with timestamp. |
+| 3 | `make report` — Nornir+NAPALM pulls interface error counters. Outputs a Markdown table. |
+| 4 | `netconf_pull.py` — pull `/ietf-routing:routing/control-plane-protocols` from CSR1000v via NETCONF. Pretty-print OSPF neighbor list. |
+| 5 | `restconf_pull.py` — same data via RESTCONF + JSON. Write a paragraph in your notes comparing the two API ergonomics. |
+| 6 | `gnmic_subscribe.sh` — subscribe to interface counters. Stream to Prometheus. Grafana dashboard. |
+| 7 | Ansible role: deploy a new VRF + OSPF process to a Cisco IOS-XE device **and** a MikroTik CHR from the same playbook (vendor-conditional tasks). |
 
 **Prove it:**
 - `git log` shows ≥ 30 commits with meaningful messages.
 - `make backup && make report` runs end-to-end without manual intervention.
-- One playbook touches both a Cisco and a MikroTik device successfully.
+- One playbook successfully touches both a Cisco and a MikroTik device.
 
 ---
 
 ## Lab 16 — Capstone (Week 16)
 
-**The single most important lab of the plan.** This is your portfolio piece.
+**The portfolio piece.** Everything from Labs 1–15 in one topology, deployed by Ansible from your Lab 15 repo.
 
-**Topology (full ISP/large-enterprise reference):**
+**Topology:**
 
 ```
-                      [TACACS+/RADIUS/DNS/DHCP/Prometheus/Grafana/LibreNMS]
-                                          |
-                                       [MGMT vSwitch]
-                                          |
-        +--------- AS 65000 (your enterprise) ----------+
-        |                                               |
-       PE1 ============= MPLS Core (LDP) ============= PE2
-       /  \                                            /  \
-    CE1A   CE1B (VPN_RED)                       CE2A   CE2B (VPN_BLUE)
-                                                  |
-                                              [DMVPN spoke
-                                               over Internet
-                                               terminating
-                                               in VPN_BLUE on PE2]
+              [TACACS+ / Prometheus / Grafana / LibreNMS / ntopng]
+                                    |
+                                [MGMT vSwitch]
+                                    |
+     +------- AS 65000 (your ISP/enterprise) -------+
+     |                                               |
+    PE1 ============ MPLS Core (LDP) ============= PE2
+    / \                                             / \
+CE1A  CE1B (VPN_RED)                         CE2A  CE2B (VPN_BLUE)
+                                               |
+                                          [DMVPN Phase 3 spoke
+                                           over simulated Internet
+                                           terminating in VPN_BLUE]
 ```
 
-**Deploy everything by Ansible from your Git repo from Lab 15.**
+**Mandatory checklist:**
 
-**Mandatory features (checklist):**
-- [ ] OSPF in the MPLS core, LDP, MP-BGP VPNv4 between PEs
-- [ ] 2 VRFs (VPN_RED OSPF PE-CE, VPN_BLUE eBGP PE-CE)
-- [ ] Overlap `10.0.0.0/24` between VRFs to prove isolation
-- [ ] DMVPN Phase 3 from one branch into VPN_BLUE on PE2 (over Internet)
-- [ ] IKEv2 with certificates protecting the DMVPN
-- [ ] AAA via TACACS+ on every router (two privilege tiers)
-- [ ] CoPP on every router (4 classes)
-- [ ] IPv6 dual-stack everywhere (BGP IPv6 AF, OSPFv3, IPv6 ACLs, IPv6 FHS on the access segment)
-- [ ] NetFlow v9 / IPFIX to ntopng; SNMPv3 to LibreNMS; gNMI to Prometheus
-- [ ] IP SLA monitoring critical paths with track-based static routes
-- [ ] One-page network diagram (draw.io / Excalidraw / mermaid) in the repo
-- [ ] README explaining how to rebuild from scratch in < 30 minutes
+- [ ] OSPF in MPLS core, LDP, MP-BGP VPNv4 between PEs
+- [ ] VPN_RED: OSPF PE-CE. VPN_BLUE: eBGP PE-CE.
+- [ ] Overlapping `10.0.0.0/24` between VRFs — isolation proven
+- [ ] DMVPN Phase 3 from one branch into VPN_BLUE on PE2, IKEv2 protection
+- [ ] AAA via TACACS+ on every router, two privilege tiers
+- [ ] CoPP 4-class policy on every router
+- [ ] IPv6 dual-stack everywhere: BGP IPv6 AF, OSPFv3, IPv6 ACLs, IPv6 FHS on access segment
+- [ ] NetFlow v9 → ntopng; SNMPv3 → LibreNMS; gNMI → Prometheus
+- [ ] IP SLA monitoring critical paths with track-based floating statics
+- [ ] Ansible playbook deploys the whole topology from the Git repo
+- [ ] One-page network diagram (draw.io / Excalidraw / mermaid) committed to the repo
+- [ ] README: explains how to rebuild from scratch in under 30 minutes
 
 **Self-test:**
-- Run the **CCNP ENARSI 300-410 practice exam** (Pearson Test Prep, ≥85% on a 200-question full pool).
-- Hand the repo to a friend; they should be able to `git clone` + `make all` and rebuild your topology.
-
-**Decision point at the end:** which next certification or skill track? Options laid out in `Post-ENCOR-Study-Plan.md` Week-16 section.
+- Run the CCNP ENARSI 300-410 practice exam (Pearson Test Prep). Target ≥ 85% on the 200-question pool.
+- Hand the repo to someone else. They `git clone` + `make all` and rebuild your topology without asking you anything.
 
 ---
 
-## Anki workflow
+## GNS3vault coverage summary
 
-Same as ENCOR plan — see `Post-ENCOR-Practice-Questions.md` for the per-week Q&A. Convert each to Anki cards (Cloze for command syntax, Basic for concept Q&A). 20 min/day max.
-
-## Tracker workflow
-
-Update `Post-ENCOR-Progress-Tracker.md` or `.csv` after every lab. When confidence ≤ 3 for two weeks in a row, slow down and re-lab.
+| Post-ENCOR topic | GNS3vault coverage | Hand-written supplement |
+|---|---|---|
+| VRF-Lite | Full (`vrf-lite`, `vrf-routing`) | Route-leaking extension, MikroTik cross-check |
+| BFD | None | Full hand-written |
+| Route manipulation / PBR | Partial (`policy-based-routing`, BGP filtering) | Multi-AS extension, MikroTik cross-check |
+| Redistribution | Indirect (OSPF + EIGRP baselines) | Full redistribution + loop-prevention hand-written |
+| EIGRP classic | Full (23 labs in archive) | Named-mode extension hand-written |
+| OSPFv3 AFs | None | Full hand-written |
+| OSPF areas / network types | Full (12+ labs) | Modern network-type extension (no FR) |
+| IS-IS | None (containerlab topology only) | Full hand-written on FRR |
+| BGP deep | Excellent (50+ labs) | IPv6 AF extension hand-written |
+| BGP troubleshooting | Partial (3 failure-mode labs) | Gauntlet hand-written |
+| MPLS L3VPN | Good (`mpls-ldp`, `basic-mpls-vpn`, PE-CE OSPF) | eBGP PE-CE + 6VPE extension, Juniper cross-check |
+| DMVPN | None | Full hand-written (GRE/IPsec warm-up from archive) |
+| Infrastructure security | Excellent (AAA, ACL, CoPP, ZBF) | IPv6 FHS extension, production CoPP extension |
+| SNMP / NTP / syslog / IP SLA | Full | — |
+| Modern telemetry (gNMI / Grafana) | None | Full hand-written |
+| Automation repo | None | Full hand-written |
+| Capstone | None | Full hand-written |
