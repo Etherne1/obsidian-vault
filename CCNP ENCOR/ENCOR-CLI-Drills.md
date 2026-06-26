@@ -2,12 +2,19 @@
 
 **Purpose:** Short, focused config exercises that build muscle memory. Each drill targets one concept, takes 5–15 minutes, and reuses the EVE-NG topology style from `ENCOR-Labs-EVE-NG.md` (vIOS-L2, vIOS-L3, CSR1000v 17.3.04a).
 
-**How to use:**
+**When to use:** Pass 2 only. Don't touch these during Pass 1 — you don't have a mental model yet and the drills won't stick.
+
+**Three modes in Pass 2:**
+- **Warmup (before a lab session):** pick 1–2 drills from the same block as the GNS3vault lab you're about to run. Type from memory before opening EVE-NG.
+- **Cooldown (after a lab session):** pick 1 drill from the same block. No notes — from memory only. If you fail, it becomes an Anki card.
+- **Marathon (Pass 2 Blocks 11–12):** 5–8 drills per session, mixed domains, no peeking. By the capstone you should breeze through all 60 cold.
+
+**How to run a drill:**
 1. Spin up just the devices the drill needs (don't load a full lab unless the drill maps to one).
 2. Try the goal *first without looking* at the solution.
 3. Compare your config to the solution.
 4. Verify with the listed show commands.
-5. Save the running-config if you'll re-use it; otherwise revert.
+5. Mark it done in your tracker: `D-NN ✓`. Repeat the next day if you had to peek.
 
 **Drill structure:** Each drill has:
 - **Goal** — one-line objective
@@ -1588,20 +1595,23 @@ telemetry ietf subscription 200
 
 ---
 
-## Suggested progression
+## Drill map by Pass 2 block
 
-| Phase | Drills | Why |
+| Pass 2 block | Topic | Drills |
 |---|---|---|
-| Bootstrap | 1–3 | You'll re-paste these constantly. Get them in muscle memory. |
-| L2 week | 4–13 | Sequence inside Week 2–3 |
-| IGP week | 14–20 | Sequence inside Week 4 |
-| BGP week | 21–25 | Sequence inside Week 5 |
-| FHRP + NAT + multicast | 26–31 | Sequence inside Week 6 |
-| Services | 32–36 | Sequence inside Week 7 |
-| Overlays | 37–40 | Sequence inside Week 8 |
-| Virtualization | 41–42 | Sequence inside Week 14 |
-| Network Assurance | 43–46 | Sequence inside Week 11 |
-| Security | 47–54 | Sequence inside Weeks 12–13 |
-| Automation | 55–60 | Sequence inside Week 14 |
+| Block 1 | STP + Guards | 7, 8, 9, 10 |
+| Block 2 | VLANs + EtherChannel | 4, 5, 6, 11, 12, 13 |
+| Block 3 | OSPF | 14, 15, 16, 17, 18, 19, 20 |
+| Block 4 | BGP | 21, 22, 23, 24, 25 |
+| Block 5 | Multicast | 30, 31 |
+| Block 6 | FHRP + NAT | 26, 27, 28, 29 |
+| Block 7 | IP Services | 32, 33, 34, 35, 36 |
+| Block 8 | Overlays + VRF | 37, 38, 39, 40, 41, 42 |
+| Block 9 | Wireless | — (DevNet sandbox, no CLI drills) |
+| Block 10 | Network Assurance | 43, 44, 45, 46 |
+| Block 11 | Security | 47, 48, 49, 50, 51, 52, 53, 54 |
+| Block 12 | Automation | 1, 2, 3 (bootstrap refresh), 55, 56, 57, 58, 59, 60 |
 
-Run each drill at least twice — once with the solution open, once blind. If the second pass takes more than the time limit listed, mark it for re-drill the following week.
+**Always start with Drills 1–3 in Block 1** — you'll re-paste the baseline config constantly across every block. Get it in muscle memory first.
+
+Run each drill at least twice — once with the solution open, once blind. If the blind pass takes more than double the expected time, mark it for re-drill at the next session. Don't move to the next block with more than 2 drills still failing.

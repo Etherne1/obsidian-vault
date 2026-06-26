@@ -1841,7 +1841,28 @@
 
 ## How to use this question bank
 
-- After finishing a week of study, do the corresponding block(s) **closed-book**, then check answers.
-- Mark misses in your `ENCOR-Progress-Tracker.md` under "Open gaps."
-- A week before the exam, re-do all blocks back-to-back as a timed dry run.
-- These are scenario practice. They complement (do not replace) the official Pearson Test Prep questions in the OCG.
+**Pass 2 only.** Don't touch these during Pass 1 — the questions won't stick until you've already seen the material once.
+
+| Block | Domain blocks to use |
+|---|---|
+| Block 1 — STP + Guards | 3A (Infrastructure — L2) |
+| Block 2 — VLANs + EtherChannel | 3A (continued) |
+| Block 3 — OSPF | 3B (Infrastructure — IGP) |
+| Block 4 — BGP | 3C (Infrastructure — BGP) |
+| Block 5 — Multicast | 3B (Infrastructure — relevant questions) |
+| Block 6 — FHRP + NAT | 3A, 3B (Services questions) |
+| Block 7 — IP Services | 4A, 4B (Network Assurance) |
+| Block 8 — Overlays + VRF | 2A, 2B (Virtualization) |
+| Block 9 — Wireless | 1C (Architecture — Wireless) |
+| Block 10 — Network Assurance | 4A, 4B, 4C |
+| Block 11 — Security | 5A, 5B, 5C |
+| Block 12 — Automation | 6A, 6B, 6C |
+
+**How to run a block:**
+1. Do the block **closed-book** immediately after finishing the GNS3vault labs for that Pass 2 block.
+2. Score yourself. Any miss → becomes an Anki card with the full explanation on the back.
+3. Note misses in your `ENCOR-Progress-Tracker.md` under "Needs review."
+
+**End of Pass 2 (Blocks 11–12):** re-do all blocks back-to-back as a timed dry run. Target 80%+ across all domains before booking the exam.
+
+These are scenario practice. They complement — do not replace — the official Pearson Test Prep questions in the OCG.
