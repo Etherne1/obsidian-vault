@@ -52,10 +52,10 @@ Every topic is covered twice. This is the whole system in one sentence:
 
 ### Pass 1 — The Map
 
-- Watch INE modules (primary — CCIE-caliber depth)
-- Watch CBT modules after INE (shorter, exam-angle, second perspective)
+- Watch CBT modules first (concepts, big picture, self-check quizzes)
+- Watch INE modules after CBT (same topic, protocol depth and Wireshark-level detail)
 - Skim OCG chapter summaries only
-- Write 3–5 bullets per INE module **from memory** (close the video first)
+- Write 3–5 bullets per topic **from memory** after both videos (close them first)
 - **No labs. No Anki. No deep reading.**
 - Flexible pace — if a topic takes 10 days instead of 7, extend it. Nothing breaks.
 
@@ -70,7 +70,9 @@ Every topic is covered twice. This is the whole system in one sentence:
 
 ### Why this structure works
 
-Without a mental map, labs are frustrating — you spend most of the time confused about *what* to type rather than *why* it works. Pass 1 fixes this. By the time you hit Pass 2 labs, you've already seen the topology and the commands. You spend your time on the interesting part: why does this break, what does this show command actually tell me.
+CBT gives you the concept framework first — the big picture, the "why does this exist", and a quiz to verify you got it. INE then goes deep on the same topic — Wireshark captures, edge cases, protocol internals. Getting the concept before the depth means INE becomes enrichment rather than confusion.
+
+Without a mental map, labs are frustrating — you spend most of the time confused about *what* to type rather than *why* it works. Pass 1 fixes this. By the time you hit Pass 2 labs, you've already seen the topology and the commands twice. You spend your time on the interesting part: why does this break, what does this show command actually tell me.
 
 ---
 
