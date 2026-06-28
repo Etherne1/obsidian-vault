@@ -6,7 +6,7 @@
 
 **Total duration:** ~28–32 weeks across two passes.
 
-**Video spine:** INE legacy (Library E) as primary for routing/security depth. CBT ENARSI (Library A) as secondary for exam angle and troubleshooting flow. Design (Library C) as a parallel once-per-topic track. Automation (Library B) filtered — vendor-neutral modules only.
+**Video spine:** CBT ENARSI (Library A) as primary — concepts, big picture, exam angle. INE legacy (Library E) as secondary — protocol depth and packet-level detail. Design (Library C) as a parallel once-per-topic track. Automation (Library B) filtered — vendor-neutral modules only.
 
 **Labs:** GNS3vault archive for all classical topics. Hand-written EVE-NG labs for DMVPN, IS-IS, BFD, OSPFv3 AFs, named-mode EIGRP, IPv6 FHS, telemetry, automation, and the capstone. See `Post-ENCOR-Labs-EVE-NG.md` for the full lab book.
 
@@ -14,13 +14,13 @@
 
 | ID | Library | Role in this plan |
 |---|---|---|
-| **A** | CBT Nuggets CCNP ENARSI 300-410 (40 modules) | Secondary — watched after INE for exam angle and troubleshooting flow |
+| **A** | CBT Nuggets CCNP ENARSI 300-410 (40 modules) | **Primary** — watched first for concepts, big picture, and self-check quizzes |
 | **B** | CBT Nuggets DEVCOR/ENAUTO 300-435 (21 modules) | Filtered — vendor-neutral modules only; Cisco-specific ones are architecture-only overviews |
 | **C** | CCNP Enterprise Design ENSLD 300-420 (27 modules) | Parallel track — one module per topic alongside the routing content |
-| **D** | Pearson CCNP Route video (11 lessons) | Tertiary refresher when A or E doesn't click on a specific topic |
-| **E** | INE legacy routing & security deep-dives (27 module folders) | **Primary** — the deepest protocol content you own; watched first |
+| **D** | Pearson CCNP Route video (11 lessons) | Tertiary refresher when A or E both don't click on a specific topic |
+| **E** | INE legacy routing & security deep-dives (27 module folders) | Secondary — watched after CBT for protocol depth and Wireshark-level detail |
 
-**Why INE first:** the INE courses are CCIE-caliber depth. They explain *why* protocols behave the way they do. CBT is exam-angle — it tells you *what* to configure. Getting depth before the exam angle means CBT becomes consolidation rather than introduction. You retain more from the second pass.
+**Why CBT first:** CBT gives you the concept framework, the big picture, and a quiz to self-check understanding. INE then goes deep — Wireshark analysis, edge cases, protocol internals. Getting the concept before the depth means INE becomes enrichment rather than confusion. You retain more from both.
 
 ---
 
@@ -29,19 +29,19 @@
 | | Pass 1 (~16 weeks) | Pass 2 (~12 weeks) |
 |---|---|---|
 | **Goal** | Build the mental map. See everything once. | Harden with labs, notes, and Anki. |
-| **INE (E)** | Primary — watch in full | Re-watch only weak modules |
-| **CBT (A)** | Secondary — watch after INE | Only for topics where INE didn't click |
+| **CBT (A)** | Primary — watch first for concepts and big picture | Only for topics where INE didn't click |
+| **INE (E)** | Secondary — watch after CBT for protocol depth | Re-watch only weak modules |
 | **Design (C)** | One module per topic — light pass | Re-watch design modules for weak topics |
 | **Library D** | Only when A + E both don't click | — |
 | **Labs** | None | All labs from the lab book, GNS3vault first |
-| **OCG/notes** | 3–5 bullets per INE module from memory | Full notes, "things I got wrong" subsection |
+| **OCG/notes** | 3–5 bullets per topic from memory after both videos | Full notes, "things I got wrong" subsection |
 | **Anki** | None | Build from notes, review daily |
 | **MikroTik cross-checks** | None | After each relevant lab |
 
 **Daily rhythm (both passes):**
 
-- Good day (2h): 90 min INE/CBT video (Pass 1) or lab session (Pass 2) + 30 min bullets from memory.
-- Short day (45–60 min): one INE module, 3 bullets.
+- Good day (2h): CBT first, then INE for the same topic (Pass 1) or lab session (Pass 2) + 30 min bullets from memory.
+- Short day (45–60 min): one CBT module + 3 bullets. If time allows, follow with the matching INE module.
 - Zero day: fine. Don't double up the next day. Resume where you left off.
 - The one rule: always write bullets after watching. Closing the video and writing from memory is worth more than re-watching.
 
@@ -49,7 +49,7 @@
 
 # PASS 1 — The Map (Weeks 1–16)
 
-No labs. No Anki. No deep OCG reads. INE first → CBT second → one design module → 5 bullets from memory.
+No labs. No Anki. No deep OCG reads. CBT first → INE second → one design module → 5 bullets from memory.
 
 If a topic takes 10 days instead of 7, extend it. Nothing breaks.
 
@@ -59,13 +59,13 @@ If a topic takes 10 days instead of 7, extend it. Nothing breaks.
 
 ### Week 1 — VRF-Lite, BFD, route manipulation foundations
 
-**INE (E — primary):**
-- `4-VRF-Lite` — full module (VRF concept, RD/RT mechanics, route leaking, address families)
-- `5-Bi-Directional Forwarding Detection (Video)` — full module (BFD asynchronous vs demand, timers, IGP/BGP integration)
-
-**CBT (A — after INE):**
+**CBT (A — watch first):**
 - `4. Configure and Verify VRF-Lite` (modules 19–23)
 - `5. Bidirectional Forwarding Detection`
+
+**INE (E — after CBT, protocol depth):**
+- `4-VRF-Lite` — full module (VRF concept, RD/RT mechanics, route leaking, address families)
+- `5-Bi-Directional Forwarding Detection (Video)` — full module (BFD asynchronous vs demand, timers, IGP/BGP integration)
 
 **Design (C):** `1. Design an IPv4 and IPv6 Addressing Scheme` — VRF planning starts with an address plan.
 
@@ -77,12 +77,12 @@ If a topic takes 10 days instead of 7, extend it. Nothing breaks.
 
 ### Week 2 — Route manipulation and PBR
 
-**INE (E — primary):**
-- `4-Policy-Based Routing (Video)` — full module (set-clauses, next-hop, interface, DSCP, verify-availability)
-
-**CBT (A — after INE):**
+**CBT (A — watch first):**
 - `1. Tools for Route Manipulation and Control`
 - `3. Configure and Verify Policy-Based Routing`
+
+**INE (E — after CBT, protocol depth):**
+- `4-Policy-Based Routing (Video)` — full module (set-clauses, next-hop, interface, DSCP, verify-availability)
 
 **Library D (if A + E don't click):** `Lesson 6 Route Manipulation and Advanced Routing Concepts` — Pearson's strongest lesson on this topic.
 
@@ -96,12 +96,12 @@ If a topic takes 10 days instead of 7, extend it. Nothing breaks.
 
 ### Week 3 — Route redistribution
 
-**INE (E — primary):**
+**CBT (A — watch first):** `1. Tools for Route Manipulation and Control` (redistribution focus).
+
+**INE (E — after CBT, protocol depth):**
 - `1-Preventing Loops With Administrative Distance` — full module
 - `2-Implementing Loop Prevention Mechanisms` — full module
 - `3-Optimizing IGP Route Redistribution` — full module
-
-**CBT (A — after INE):** `1. Tools for Route Manipulation and Control` (redistribution focus — re-watch the redistribution sections).
 
 **Library D (if needed):** `Lesson 7 Route Redistribution` — Pearson's cleanest redistribution explanation.
 
@@ -115,15 +115,15 @@ If a topic takes 10 days instead of 7, extend it. Nothing breaks.
 
 ### Week 4 — EIGRP deep
 
-**INE (E — primary):**
-- `6-Implementing & Troubleshooting EIGRP` — full module (the deepest EIGRP content you own: DUAL, feasibility condition, SIA, named-mode, stub routing, SHA-256)
-
-**CBT (A — after INE):**
+**CBT (A — watch first):**
 - `6. Fundamentals of EIGRP`
 - `7. EIGRP Address Families`
 - `8. EIGRP Neighbor Relationships and Authentication`
 - `9. EIGRP Stub Routing`
 - `10. Troubleshoot EIGRP`
+
+**INE (E — after CBT, protocol depth):**
+- `6-Implementing & Troubleshooting EIGRP` — full module (DUAL, feasibility condition, SIA, named-mode, stub routing, SHA-256)
 
 **Library D (if needed):** `Lesson 1 EIGRP` + `Lesson 2 EIGRPv6`.
 
@@ -139,13 +139,13 @@ If a topic takes 10 days instead of 7, extend it. Nothing breaks.
 
 ### Week 5 — OSPFv3 and authentication
 
-**INE (E — primary):**
-- `7-Implementing & Troubleshooting OSPF` — full module (the deepest OSPF content you own: OSPFv3 AF config, key-chain authentication, adjacency troubleshooting, NSSA, summarization)
-
-**CBT (A — after INE):**
+**CBT (A — watch first):**
 - `11. OSPF Address Families`
 - `12. Troubleshoot OSPF Authentication for IPv4`
 - `13. Troubleshoot OSPF Authentication for IPv6`
+
+**INE (E — after CBT, protocol depth):**
+- `7-Implementing & Troubleshooting OSPF` — full module (OSPFv3 AF config, key-chain authentication, adjacency troubleshooting, NSSA, summarization)
 
 **Library D (if needed):** `Lesson 3 OSPF` + `Lesson 4 OSPFv3`.
 
@@ -159,15 +159,15 @@ If a topic takes 10 days instead of 7, extend it. Nothing breaks.
 
 ### Week 6 — OSPF network types, areas, virtual links
 
-**INE (E — primary):** Re-watch relevant sections of `7-Implementing & Troubleshooting OSPF` — specifically the network types and area types modules. This is a second pass on the same INE course, focused on a different slice.
-
-**CBT (A — after INE):**
+**CBT (A — watch first):**
 - `14. Troubleshoot IPv4 OSPF Network Types`
 - `15. Troubleshoot IPv6 OSPF Network Types`
 - `16. Troubleshoot IPv4 OSPF Areas`
 - `17. Troubleshoot IPv6 OSPF Areas`
 - `18. Troubleshoot IPv4 OSPF Virtual Links`
 - `19. Troubleshoot IPv6 OSPF Virtual Links`
+
+**INE (E — after CBT, protocol depth):** Re-watch relevant sections of `7-Implementing & Troubleshooting OSPF` — specifically the network types and area types modules.
 
 **Design (C):** `4. Designing Networks with OSPF` (Part 2) — virtual-link avoidance, area boundary placement, decision tree for stub/NSSA.
 
@@ -179,11 +179,11 @@ If a topic takes 10 days instead of 7, extend it. Nothing breaks.
 
 ### Week 7 — OSPF path preference + IS-IS
 
-**INE (E — primary):** No dedicated IS-IS module in the library. For OSPF path preference, re-watch the relevant section of `7-Implementing & Troubleshooting OSPF`.
+**CBT (A — watch first):** `20. OSPF Path Preference`.
 
-**CBT (A — after INE):** `20. OSPF Path Preference`.
+**Design (C — primary IS-IS source this week):** `2. IS-IS Foundations and Design` — the only IS-IS content in your library; cover it carefully since neither CBT ENARSI nor INE has a dedicated IS-IS module.
 
-**Design (C):** `2. IS-IS Foundations and Design` — the only IS-IS content in your library; cover it carefully. This is the primary source for IS-IS this week since INE doesn't have it.
+**INE (E — after CBT):** No dedicated IS-IS module. Re-watch the relevant OSPF path preference section of `7-Implementing & Troubleshooting OSPF` if needed.
 
 **Automation drip (B):** `10. Automate Cisco IOS-XE Devices with Netconf` — concepts only; the workflow transfers to any vendor.
 
@@ -195,19 +195,17 @@ If a topic takes 10 days instead of 7, extend it. Nothing breaks.
 
 ### Week 8 — BGP address families, RR, filtering, path selection
 
-**INE (E — primary):**
-- `9-Core BGP` — full module
-- `10-Route BGP Details and Implementation - Part 1` — full module
-- `11-Route BGP Details and Implementation - Part 2` — full module
-- `12-Route BGP Details and Implementation - Part 3` — full module
-
-These four modules are the deepest BGP content you own. Watch in order.
-
-**CBT (A — after INE):**
+**CBT (A — watch first):**
 - `21. Break Through BGP Basics with Address Families`
 - `22. Solve BGP Scalability Issues`
 - `23. Filter Routes in BGP`
 - `24. Understand the BGP Best Path Algorithm`
+
+**INE (E — after CBT, protocol depth):**
+- `9-Core BGP` — full module
+- `10-Route BGP Details and Implementation - Part 1` — full module
+- `11-Route BGP Details and Implementation - Part 2` — full module
+- `12-Route BGP Details and Implementation - Part 3` — full module
 
 **Design (C):**
 - `5. Break Through BGP Basics with Address Families`
@@ -215,7 +213,7 @@ These four modules are the deepest BGP content you own. Watch in order.
 - `7. Understand the BGP Best Path Algorithm`
 - `8. Design Networks with BGP`
 
-Note: Library A and C overlap deliberately here. Watch C for design intent, A for troubleshooting drill. They're short enough that both are manageable in one week given the INE foundation.
+Note: Library A and C overlap deliberately here. Watch C for design intent, A for troubleshooting drill. They're short enough that both are manageable in one week given the CBT foundation already laid.
 
 **Library D (if needed):** `Lesson 5 BGP`.
 
@@ -227,11 +225,11 @@ Note: Library A and C overlap deliberately here. Watch C for design intent, A fo
 
 ### Week 9 — BGP troubleshooting + IPv6 migration
 
-**INE (E — primary):**
-- `13-IPv6 Routing` — full module (dual-stack, OSPFv2/v3, eBGP IPv4 + IPv6 AFs, link-local next-hops, migration strategies)
-
-**CBT (A — after INE):**
+**CBT (A — watch first):**
 - `25. Troubleshoot Common BGP Issues`
+
+**INE (E — after CBT, protocol depth):**
+- `13-IPv6 Routing` — full module (dual-stack, OSPFv2/v3, eBGP IPv4 + IPv6 AFs, link-local next-hops, migration strategies)
 
 **Design (C):** `9. Determine IPv6 Migration Strategies`.
 
@@ -245,13 +243,13 @@ Note: Library A and C overlap deliberately here. Watch C for design intent, A fo
 
 ### Week 10 — MPLS and L3VPN
 
-**INE (E — primary):**
-- `14-Introduction to MPLS` — full module (label fields, imposition/swap/disposition/PHP, LDP discovery)
-- `15-Introduction to MPLS VPNs` — full module (VRF, RD/RT, MP-BGP VPNv4, label stack, PE-CE protocols)
-
-**CBT (A — after INE):**
+**CBT (A — watch first):**
 - `26. Describe MPLS Operations`
 - `27. Describe MPLS Layer 3 VPNs`
+
+**INE (E — after CBT, protocol depth):**
+- `14-Introduction to MPLS` — full module (label fields, imposition/swap/disposition/PHP, LDP discovery)
+- `15-Introduction to MPLS VPNs` — full module (VRF, RD/RT, MP-BGP VPNv4, label stack, PE-CE protocols)
 
 **Library D (if needed):** `Lesson 8 Multiprotocol Label Switching (MPLS)`.
 
@@ -265,12 +263,12 @@ Note: Library A and C overlap deliberately here. Watch C for design intent, A fo
 
 ### Week 11 — DMVPN and IPsec
 
-**INE (E — primary):**
+**CBT (A — watch first):** `28. Configure and Verify DMVPN Networks`.
+
+**INE (E — after CBT, protocol depth):**
 - `16-Dynamic Multipoint VPN (DMVPN)` — full module (Phase 1/2/3 mechanics, NHRP roles, mGRE, EIGRP hub no-split-horizon)
 - `17-IPsec VPNs` — full module (IKE phases, transform-set, crypto map, VTI, GRE over IPsec)
 - `18-IKEv1 IPsec VPN` — modules 1–5 (IKE phase 1 modes, phase 2, SA establishment). Skip modules 6–8 unless DMVPN lab reveals gaps.
-
-**CBT (A — after INE):** `28. Configure and Verify DMVPN Networks`.
 
 **Library D (if needed):** `Lesson 9 DMVPN`.
 
@@ -289,19 +287,19 @@ Note: Library A and C overlap deliberately here. Watch C for design intent, A fo
 
 ### Week 12 — Infrastructure security
 
-**INE (E — primary):**
-- `19-RouterSwitch Security` — full module
-- `20-Access-Lists Beyond the Basic and Extended` — full module (reflexive, dynamic, object groups, time-based, logging)
-- `21-IPv6 Traffic Filters` — full module
-- `22-Hardening Cisco IOS` — full module (device architecture, AAA framework, SNMP/NTP/logging hardening, control-plane security, CoPPr, uRPF)
-- `23-IPv6 First Hop Security vSeminar` — full module (RA Guard, DHCPv6 Guard, IPv6 Snooping, Source Guard)
-
-**CBT (A — after INE):**
+**CBT (A — watch first):**
 - `29. Troubleshoot Device Security using IOS AAA`
 - `30. Troubleshoot Router Security Features`
 - `31. Configure and Verify Control Plane Policing (CoPP)`
 - `32. Troubleshoot Control Plane Policing`
 - `33. Describe IPv6 First Hop Security Features`
+
+**INE (E — after CBT, protocol depth):**
+- `19-RouterSwitch Security` — full module
+- `20-Access-Lists Beyond the Basic and Extended` — full module (reflexive, dynamic, object groups, time-based, logging)
+- `21-IPv6 Traffic Filters` — full module
+- `22-Hardening Cisco IOS` — full module (device architecture, AAA framework, SNMP/NTP/logging hardening, control-plane security, CoPPr, uRPF)
+- `23-IPv6 First Hop Security vSeminar` — full module (RA Guard, DHCPv6 Guard, IPv6 Snooping, Source Guard)
 
 **Library D (if needed):** `Lesson 10 Infrastructure Security`.
 
@@ -315,19 +313,19 @@ Note: Library A and C overlap deliberately here. Watch C for design intent, A fo
 
 ### Week 13 — Infrastructure services and telemetry
 
-**INE (E — primary):**
-- `24-Understanding SNMP` — full module (v2c vs v3, auth+priv, MIB walk, traps vs informs)
-- `25-Utilizing IOS DHCP Services` — full module (DHCP server, relay, option 82, cross-VRF relay)
-- `26-IP Service Level Agreements` — full module (probe types, reaction, tracking, route failover)
-- `27-Using & Troubleshooting Netflow` — full module (v5 vs v9 vs IPFIX, sampled vs full, Flexible NetFlow)
-
-**CBT (A — after INE):**
+**CBT (A — watch first):**
 - `34. Troubleshoot Device Management Protocols`
 - `35. Troubleshoot SNMP`
 - `36. Troubleshoot Network Problems using Logging`
 - `37. Troubleshoot IPv4 and IPv6 DHCP`
 - `38. Troubleshoot Network Performance Issues using IP SLA`
 - `39. Troubleshoot NetFlow`
+
+**INE (E — after CBT, protocol depth):**
+- `24-Understanding SNMP` — full module (v2c vs v3, auth+priv, MIB walk, traps vs informs)
+- `25-Utilizing IOS DHCP Services` — full module (DHCP server, relay, option 82, cross-VRF relay)
+- `26-IP Service Level Agreements` — full module (probe types, reaction, tracking, route failover)
+- `27-Using & Troubleshooting Netflow` — full module (v5 vs v9 vs IPFIX, sampled vs full, Flexible NetFlow)
 
 **Library D (if needed):** `Lesson 11 Infrastructure Services`.
 
@@ -368,9 +366,9 @@ Note: Library A and C overlap deliberately here. Watch C for design intent, A fo
 
 ### Week 15 — Automation
 
-**INE (E — primary):** No dedicated automation module in the INE library. This week is CBT + Library B primary.
+**INE (E):** No dedicated automation module in the INE library — skip this week.
 
-**CBT ENAUTO (B — primary this week):**
+**CBT ENAUTO (B — primary this week alongside A):**
 - `1. Implement Source Control with Git` + `2. Collaborate with Git` (if not done in Week 1)
 - `5. Interpret Python Scripts`
 - `6. Python Virtual Environments`
@@ -401,7 +399,7 @@ Write a one-page summary of your biggest weak spots. These become the first targ
 
 **Mode:** labs are now the spine. Each block follows this pattern:
 
-1. **Re-watch weak INE modules** — the ones where your Pass 1 bullets were thin
+1. **Re-watch weak INE modules** — INE is where the protocol depth lives; re-watch whichever modules your Pass 1 bullets were thinnest on
 2. **GNS3vault labs** from `Post-ENCOR-Labs-EVE-NG.md` — pre-validated, task-listed, YouTube walkthroughs
 3. **Hand-written EVE-NG lab** for topics GNS3vault doesn't cover
 4. **Full notes in your own words** — include "Things I got wrong" subsection

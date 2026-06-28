@@ -3,7 +3,7 @@
 **Goal:** Deep working knowledge for production use. Exam-readiness is a side-effect, not the primary driver.  
 **Time budget:** ~2 hours/day, irregular. Some days nothing — that's fine, the structure absorbs it.  
 **Total duration:** ~24–26 weeks across two passes.  
-**Video spine:** INE legacy CCIE-style courses (primary) + CBT Nuggets / Jeff Kish (secondary, for exam-angle and troubleshooting flow).  
+**Video spine:** CBT Nuggets / Jeff Kish (primary — concepts, big picture, self-check quizzes) + INE legacy CCIE-style courses (secondary — protocol depth and Wireshark-level detail).  
 **Labs:** GNS3vault archive (René Molenaar) for all classical topics + hand-written EVE-NG labs for modern topics (VXLAN, LISP, NETCONF, Ansible).  
 **Reference:** OCG 2nd edition (Hucaby et al.) — used in Pass 2 for slow re-reads, not as primary source in Pass 1.
 
@@ -14,11 +14,11 @@
 | | Pass 1 (~14 weeks) | Pass 2 (~10 weeks) |
 |---|---|---|
 | **Goal** | Build the mental map. See everything once. | Harden what you saw. Fix the gaps. |
-| **INE** | Primary — watch in full | Re-watch only weak modules |
-| **CBT** | Secondary — watch after INE for exam angle | Only for topics where INE didn't click |
+| **CBT** | Primary — watch first for concepts and big picture | Only for topics where INE didn't click |
+| **INE** | Secondary — watch after CBT for protocol depth | Re-watch only weak modules |
 | **Labs** | None. Zero. Resist the urge. | All labs, in order, GNS3vault first |
 | **OCG** | Skim only — 1 pass through chapter summary sections | Slow re-read of every chapter you struggled with |
-| **Notes** | 3–5 bullets per INE module, from memory | Full notes in your own words, "things I got wrong" subsection |
+| **Notes** | 3–5 bullets per topic from memory after both videos | Full notes in your own words, "things I got wrong" subsection |
 | **Anki** | None | Build deck from Pass 2 notes, review daily |
 | **Pace** | Flexible — topic takes 9 days instead of 7? Fine. | More structured — use the weekly shape as a target |
 
@@ -31,11 +31,11 @@
 You have ~2 hours on a good day, zero on a bad day. Don't fight this — design around it.
 
 **Good day (2 hours):**
-- 90 min: INE video (Pass 1) or lab session (Pass 2)
+- 90 min: CBT first, then INE for the same topic (Pass 1) or lab session (Pass 2)
 - 30 min: bullet notes from memory — close the video, write what you remember
 
 **Short day (45–60 min):**
-- Watch one INE module, write 3 bullets
+- Watch one CBT module, write 3 bullets. If time allows, follow with the matching INE module.
 - Or: Anki review only (Pass 2)
 
 **Zero day:**
@@ -47,7 +47,7 @@ You have ~2 hours on a good day, zero on a bad day. Don't fight this — design 
 
 # PASS 1 — The Map (Weeks 1–14)
 
-**Mode:** INE as primary. Watch the listed INE modules first. Then watch the corresponding CBT modules — they're shorter, exam-focused, and give you a second perspective. Skim the OCG chapter summary only (last section of each chapter, usually 1–2 pages). Write 3–5 bullets per INE module from memory.  
+**Mode:** CBT as primary. Watch the listed CBT modules first — they give you the concept, the big picture, and a quiz to self-check. Then watch the corresponding INE modules for the same topic — they go deeper into protocol mechanics and packet-level behavior. Skim the OCG chapter summary only (last section of each chapter, usually 1–2 pages). Write 3–5 bullets from memory after both videos.  
 **No labs. No Anki. No deep OCG reads.**
 
 ---
@@ -56,15 +56,15 @@ You have ~2 hours on a good day, zero on a bad day. Don't fight this — design 
 
 ### Week 1 — Switching architecture, packet forwarding, campus design
 
-**INE (primary):**
-- `7-Hardware & Software Switching Mechanisms` — `1 - Cisco Express Forwarding.mp4` (CEF, FIB, adjacency table, process vs CEF)
-- `1-Introduction to Enterprise Network Design Principles` — full single module (hierarchical model, 2-tier vs 3-tier, modular enterprise, HA design)
-- `14-LAN Switching` — `1 - LAN Switching Introduction` (how a switch works, CAM table, forwarding decisions)
-
-**CBT (after INE):**
+**CBT (primary — watch first):**
 - `01-Explain The Hierarchical Network Model`
 - `02-Explain Enterprise Network Design`
 - `15-Differentiate Between Switching Mechanisms`
+
+**INE (after CBT — protocol depth):**
+- `7-Hardware & Software Switching Mechanisms` — `1 - Cisco Express Forwarding.mp4` (CEF, FIB, adjacency table, process vs CEF)
+- `1-Introduction to Enterprise Network Design Principles` — full single module (hierarchical model, 2-tier vs 3-tier, modular enterprise, HA design)
+- `14-LAN Switching` — `1 - LAN Switching Introduction` (how a switch works, CAM table, forwarding decisions)
 
 **OCG skim:** Ch. 1 summary + Ch. 22 summary (architecture section only)
 
@@ -74,15 +74,15 @@ You have ~2 hours on a good day, zero on a bad day. Don't fight this — design 
 
 ### Week 2 — Spanning Tree Protocol
 
-**INE (primary):**
-- `15-Routing & Switching Rapid Spanning-Tree and MST` — modules 1–12 in order. This is the best STP content in either library. Cover: 802.1D root election, port roles/states, RSTP convergence, MST regions, IST master, virtual bridge, MST/PVST boundary.
-- `14-LAN Switching` — `8 - Spanning-Tree Protocol`, `9 - Optional Spanning-Tree Features` (PortFast, BPDU Guard, Root Guard, Loop Guard, UDLD, Backbone/UplinkFast)
-
-**CBT (after INE):**
+**CBT (primary — watch first):**
 - `23-Fundamentals of STP`
 - `24-Customize Spanning Tree Protocol`
 - `25-Optimize with Rapid Spanning Tree`
 - `26-Configure and Verify MST`
+
+**INE (after CBT — protocol depth):**
+- `15-Routing & Switching Rapid Spanning-Tree and MST` — modules 1–12 in order. Cover: 802.1D root election, port roles/states, RSTP convergence, MST regions, IST master, virtual bridge, MST/PVST boundary.
+- `14-LAN Switching` — `8 - Spanning-Tree Protocol`, `9 - Optional Spanning-Tree Features` (PortFast, BPDU Guard, Root Guard, Loop Guard, UDLD, Backbone/UplinkFast)
 
 **OCG skim:** Ch. 2, 3, 4 summaries
 
@@ -92,12 +92,12 @@ You have ~2 hours on a good day, zero on a bad day. Don't fight this — design 
 
 ### Week 3 — VLANs, trunking, EtherChannel
 
-**INE (primary):**
-- `14-LAN Switching` — `2 - VLANs & Trunking`, `3 - VLAN Trunking Protocol (VTP)`, `4 - VTP Version 3`, `5 - EtherChannel`, `6 - Layer 2 EtherChannel Configuration`, `7 - Layer 3 EtherChannel Configuration`
-
-**CBT (after INE):**
+**CBT (primary — watch first):**
 - `21-Troubleshoot Static and Dynamic 802.1q Trunking Protocols`
 - `22-Troubleshooting Cisco Etherchannel and LAG Ports`
+
+**INE (after CBT — protocol depth):**
+- `14-LAN Switching` — `2 - VLANs & Trunking`, `3 - VLAN Trunking Protocol (VTP)`, `4 - VTP Version 3`, `5 - EtherChannel`, `6 - Layer 2 EtherChannel Configuration`, `7 - Layer 3 EtherChannel Configuration`
 
 **OCG skim:** Ch. 5 summary
 
@@ -109,16 +109,16 @@ You have ~2 hours on a good day, zero on a bad day. Don't fight this — design 
 
 ### Week 4 — OSPF
 
-**INE (primary):**
-- `17-OSPF` — all 21 modules, in order. This is the most thorough OSPF treatment in either library. Key modules: 1 (protocol overview), 3 (adjacency troubleshooting), 4 (areas and LSA types), 5–6 (network types), 8–10 (stub area types), 11–14 (NSSA deep dive), 18–20 (summarization, filtering). Modules 7 (virtual links), 15–17 (authentication) — watch but lighter pass.
-
-**CBT (after INE):**
+**CBT (primary — watch first):**
 - `27-IP Routing Concepts`
 - `29-OSPF Foundation Concepts`
 - `30-Basic OSPF IPv4 Configuration`
 - `31-OSPF Summarization and Filtering`
 - `32-Configure and Verify an OSPF NSSA`
 - `33-Configure and Verify OSPFv3 with IPv6`
+
+**INE (after CBT — protocol depth):**
+- `17-OSPF` — all 21 modules, in order. Key modules: 1 (protocol overview), 3 (adjacency troubleshooting), 4 (areas and LSA types), 5–6 (network types), 8–10 (stub area types), 11–14 (NSSA deep dive), 18–20 (summarization, filtering). Modules 7 (virtual links), 15–17 (authentication) — watch but lighter pass.
 
 **OCG skim:** Ch. 8, 9, 10 summaries
 
@@ -128,13 +128,13 @@ You have ~2 hours on a good day, zero on a bad day. Don't fight this — design 
 
 ### Week 5 — BGP
 
-**INE (primary):**
-- `18-Core BGP` — all 7 modules: `1–2 - Core BGP Routing Part 1/2`, `3 - Applying BGP Policy`, `4–5 - NLRI Advertisement Rules Part 1/2`, `6–7 - BGP Path Selection Rules Part 1/2`. This library's BGP content is tightly scoped to ENCOR-relevant attributes, best-path, and policy — ideal depth.
-
-**CBT (after INE):**
+**CBT (primary — watch first):**
 - `34-BGP Foundation Concepts`
 - `35-Basic BGP IPv4 Configuration`
 - `36-Basic BGP IPv6 Configuration`
+
+**INE (after CBT — protocol depth):**
+- `18-Core BGP` — all 7 modules: `1–2 - Core BGP Routing Part 1/2`, `3 - Applying BGP Policy`, `4–5 - NLRI Advertisement Rules Part 1/2`, `6–7 - BGP Path Selection Rules Part 1/2`.
 
 **OCG skim:** Ch. 11, 12 summaries
 
@@ -146,12 +146,12 @@ You have ~2 hours on a good day, zero on a bad day. Don't fight this — design 
 
 ### Week 6 — Multicast
 
-**INE (primary):**
-- `23-Layer-2 Multicast` — full 22 modules (IGMPv1/2/3, MLD, IGMP snooping, querier election). This is the deepest IGMP content in either library.
-- `24-L3 Multicast with PIM Sparse-Mode` — modules covering shared tree, source registration, SPT join, Auto-RP, PIM-BSR, SSM. Watch all but skip the deep MSDP/anycast RP modules unless they interest you — those are beyond ENCOR scope.
-
-**CBT (after INE):**
+**CBT (primary — watch first):**
 - `44-IPv4 Multicast Fundamentals`
+
+**INE (after CBT — protocol depth):**
+- `23-Layer-2 Multicast` — full 22 modules (IGMPv1/2/3, MLD, IGMP snooping, querier election).
+- `24-L3 Multicast with PIM Sparse-Mode` — modules covering shared tree, source registration, SPT join, Auto-RP, PIM-BSR, SSM. Skip the deep MSDP/anycast RP modules — beyond ENCOR scope.
 
 **OCG skim:** Ch. 13 summary
 
@@ -161,15 +161,15 @@ You have ~2 hours on a good day, zero on a bad day. Don't fight this — design 
 
 ### Week 7 — FHRP and QoS
 
-**INE (primary):**
-- `21-Gateway Redundancy With FHRP` — full module (HSRP, VRRP, GLBP configuration and design)
-- `5-Introduction to QoS` — modules 1–12 (QoS tools overview, MQC, classification, marking, NBAR, FIFO/WFQ/CBWFQ/LLQ). Skip modules 13–22 (WTD/WRED internals, policing math) — deeper than ENCOR needs. Flag them for later if QoS is relevant at your job.
-- `6-Quality of Service` — watch only the Policing and Shaping modules as a complement to Course 5.
-
-**CBT (after INE):**
+**CBT (primary — watch first):**
 - `13-Unpacking Cisco QoS Components`
 - `14-QoS Marking Strategy Deep Dive`
 - `43-Configure and Verify First Hop Redundancy Protocols (FHRP)`
+
+**INE (after CBT — protocol depth):**
+- `21-Gateway Redundancy With FHRP` — full module (HSRP, VRRP, GLBP configuration and design)
+- `5-Introduction to QoS` — modules 1–12 (QoS tools overview, MQC, classification, marking, NBAR, FIFO/WFQ/CBWFQ/LLQ). Skip modules 13–22 (WTD/WRED internals, policing math) — deeper than ENCOR needs.
+- `6-Quality of Service` — watch only the Policing and Shaping modules as a complement.
 
 **OCG skim:** Ch. 14 summary, Ch. 15 §FHRP summary
 
@@ -181,18 +181,18 @@ You have ~2 hours on a good day, zero on a bad day. Don't fight this — design 
 
 ### Week 8 — IP Services: NAT, NTP, SNMP, Syslog, NetFlow, IP SLA
 
-**INE (primary):**
-- `20-Implementing NAT For Enterprise Networks` — full module
-- `27-Network Monitoring With SNMP & SYSLOG` — full module (SNMP v2c/v3 config, syslog severity)
-- `25-Traffic Analysis with Netflow` — modules 1–11 (NetFlow versions, original config, Flexible NetFlow records/export, monitoring, sampling)
-- `29-IP Service Level Agreements (Video)` — full single module
-
-**CBT (after INE):**
+**CBT (primary — watch first):**
 - `41-Describe and Configure the Network Time Protocol (NTP)`
 - `42-Configure and Verify IPv4 NAT/PAT`
 - `45-Diagnose Network Problems with Ping, Traceroute, Debug, SNMP, and Syslog`
 - `46-Configure and verify NetFlow and Flexible NetFlow`
 - `48-Configure and Verify Cisco IP SLA`
+
+**INE (after CBT — protocol depth):**
+- `20-Implementing NAT For Enterprise Networks` — full module
+- `27-Network Monitoring With SNMP & SYSLOG` — full module (SNMP v2c/v3 config, syslog severity)
+- `25-Traffic Analysis with Netflow` — modules 1–11 (NetFlow versions, original config, Flexible NetFlow records/export, monitoring, sampling)
+- `29-IP Service Level Agreements (Video)` — full single module
 
 **OCG skim:** Ch. 15 summary, Ch. 24 §Tools summary
 
@@ -202,18 +202,18 @@ You have ~2 hours on a good day, zero on a bad day. Don't fight this — design 
 
 ### Week 9 — Overlay tunnels: VRF, GRE, IPsec, LISP, VXLAN
 
-**INE (primary):**
-- `9-VRFs` — `1 - VRFs`, `2 - VRF Lite` (VRF concepts, route leaking, inter-VRF routing)
-- `12-IPsec VPNs` — full module (crypto maps, GRE over IPsec, IPsec over DMVPN, VTI, verification)
-- `13-IKEv1 IPsec VPN` — modules 1–5 (IKE phases, Phase 1 modes, Phase 2, SA establishment). Skip modules 6–8 unless IPsec lab in Pass 2 feels shaky.
-- `11-LISP` — all 5 modules (LISP overview, locator-ID separation, control/data planes, interworking with non-LISP)
-- `10-Virtual Extensible LAN (VXLAN) on Nexus NX-OS` — modules 1–7 only (Overview, Terminology, Encapsulation, Basic Workflow, Config Prerequisites, Flood & Learn). The BGP EVPN modules are excellent but well beyond ENCOR scope.
-
-**CBT (after INE):**
+**CBT (primary — watch first):**
 - `17-Verify Data Path Virtualization Technologies`
 - `18-Configure Data Path Virtualization Technologies`
 - `19-Describe LISP`
 - `20-Describe VXLAN`
+
+**INE (after CBT — protocol depth):**
+- `9-VRFs` — `1 - VRFs`, `2 - VRF Lite` (VRF concepts, route leaking, inter-VRF routing)
+- `12-IPsec VPNs` — full module (crypto maps, GRE over IPsec, IPsec over DMVPN, VTI, verification)
+- `13-IKEv1 IPsec VPN` — modules 1–5 (IKE phases, Phase 1 modes, Phase 2, SA establishment). Skip modules 6–8 unless IPsec lab in Pass 2 feels shaky.
+- `11-LISP` — all 5 modules (LISP overview, locator-ID separation, control/data planes, interworking with non-LISP)
+- `10-Virtual Extensible LAN (VXLAN) on Nexus NX-OS` — modules 1–7 only (Overview, Terminology, Encapsulation, Basic Workflow, Config Prerequisites, Flood & Learn).
 
 **OCG skim:** Ch. 16 summary, Ch. 23 §LISP/VXLAN summary
 
@@ -223,16 +223,16 @@ You have ~2 hours on a good day, zero on a bad day. Don't fight this — design 
 
 ### Week 10 — Wireless
 
-**INE (primary):**
-- `19-Enterprise Wireless Concepts & Implementation` — all 22 modules. This is more thorough than the CBT wireless section on RF physics and CAPWAP internals. Cover: RF measurement, dBm + rule of 10s/3s, 802.11 standards through 11ax, antenna types, CAPWAP, controller discovery and join, redundancy, WLAN roaming, 802.1X with EAP, web auth.
-
-**CBT (after INE):**
+**CBT (primary — watch first):**
 - `04-Analyze WLAN Design Principles`
 - `37-Describe Physical Wireless Communication`
 - `38-Describe Wireless AP Modes and Antenna Types`
 - `39-Identify Wireless Joining and Roaming Processes`
 - `40-Troubleshoot WLAN Configuration and Wireless Client Connectivity Issues`
 - `55-Configure and Verify Wireless Security Features`
+
+**INE (after CBT — protocol depth):**
+- `19-Enterprise Wireless Concepts & Implementation` — all 22 modules. Cover: RF measurement, dBm + rule of 10s/3s, 802.11 standards through 11ax, antenna types, CAPWAP, controller discovery and join, redundancy, WLAN roaming, 802.1X with EAP, web auth.
 
 **OCG skim:** Ch. 17–21 summaries (one pass through all five chapter summaries)
 
@@ -246,11 +246,7 @@ You have ~2 hours on a good day, zero on a bad day. Don't fight this — design 
 
 ### Week 11 — Enterprise architecture: SD-Access, SD-WAN
 
-**INE (primary):**
-- `2-Introduction to Cisco's SD-WAN Solution` — all 9 modules (SDN layers, SD-WAN history, Viptela architecture overview)
-- `3-Designing a Cisco SD-WAN Solution` — modules 1–12 (Brian McGahan: supported hardware, architectural considerations, orchestration/control/management/data planes, overlay bringup, deployment). Modules 13–19 are deeper design — skim unless SD-WAN is a real work need for you.
-
-**CBT (after INE):**
+**CBT (primary — watch first):**
 - `06-Explain the Principles of SD-WAN`
 - `07-Identify Cisco SD-WAN Components`
 - `08-Explain Cisco SD-WAN Services`
@@ -259,7 +255,11 @@ You have ~2 hours on a good day, zero on a bad day. Don't fight this — design 
 - `11-Identify SD-Access Components`
 - `12-Explain SD-Access Services`
 
-**Note — SD-Access:** No dedicated INE SD-Access course exists in the library. CBT modules 09–12 are the primary source for SDA. Lean on them more heavily here.
+**INE (after CBT — protocol depth):**
+- `2-Introduction to Cisco's SD-WAN Solution` — all 9 modules (SDN layers, SD-WAN history, Viptela architecture overview)
+- `3-Designing a Cisco SD-WAN Solution` — modules 1–12 (supported hardware, architectural considerations, orchestration/control/management/data planes, overlay bringup, deployment). Modules 13–19 are deeper design — skim unless SD-WAN is a real work need.
+
+**Note — SD-Access:** No dedicated INE SD-Access course exists in the library. CBT modules 09–12 remain the primary source for SDA.
 
 **OCG skim:** Ch. 22, 23 summaries
 
@@ -269,16 +269,16 @@ You have ~2 hours on a good day, zero on a bad day. Don't fight this — design 
 
 ### Week 12 — Network Assurance
 
-**INE (primary):**
+**CBT (primary — watch first):**
+- `47-Configure and verify SPAN-RSPAN-ERSPAN`
+- `49-Configure Enterprise Campuses with DNA Center Workflows` (Assurance section)
+- `50-DNA Center Assurance & Telemetry`
+
+**INE (after CBT — protocol depth):**
 - `25-Traffic Analysis with Netflow` — re-watch modules 7–11 (Flexible NetFlow focus — records, exporters, monitors, cache analysis)
 - `28-Traffic Monitoring with SPAN (Webinar)` — full single webinar (SPAN/RSPAN/ERSPAN config and limitations)
 - `27-Network Monitoring With SNMP & SYSLOG` — re-watch the SNMP v3 modules as a refresher
 - `26-Working With RMON (Video)` — single video, light pass (RMON is legacy but exam-eligible)
-
-**CBT (after INE):**
-- `47-Configure and verify SPAN-RSPAN-ERSPAN`
-- `49-Configure Enterprise Campuses with DNA Center Workflows` (Assurance section)
-- `50-DNA Center Assurance & Telemetry`
 
 **OCG skim:** Ch. 24 summary
 
@@ -290,19 +290,19 @@ You have ~2 hours on a good day, zero on a bad day. Don't fight this — design 
 
 ### Week 13 — Security
 
-**INE (primary):**
-- `32-Hardening Cisco IOS` — all 9 modules (device architecture, secure management, AAA framework, SNMP/NTP/logging hardening, control-plane security, CoPPr, uRPF). Best single IOS hardening resource in either library.
-- `33-Access-Lists Beyond the Basic and Extended` — modules covering reflexive ACLs, dynamic ACLs, object groups, time-based ACLs, logging (skip the basic standard/extended review — you know this already)
-- `34-Control Plane Policing & Protection (Video)` — full single video
-- `37-Cisco Firewall Technologies for Beginners` — full module. Best ZBFW hands-on content you own.
-- `36-Introduction To Content And Endpoint Security` — full module (NGFW/AMP/Umbrella/ESA/WSA concepts — these are exam-conceptual, no CLI)
-
-**CBT (after INE):**
+**CBT (primary — watch first):**
 - `51-Configure and Verify Device Access Control`
 - `52-Configure and Verify Access Control Lists`
 - `53-Configure and Verify Control Plane Policing (CoPP)`
 - `54-Zone-Based Firewall (ZBFW)`
 - `56-Next-Gen Security (NGFW, NGIPS, AMP, Umbrella, ESA, WSA)`
+
+**INE (after CBT — protocol depth):**
+- `32-Hardening Cisco IOS` — all 9 modules (device architecture, secure management, AAA framework, SNMP/NTP/logging hardening, control-plane security, CoPPr, uRPF)
+- `33-Access-Lists Beyond the Basic and Extended` — reflexive ACLs, dynamic ACLs, object groups, time-based ACLs, logging
+- `34-Control Plane Policing & Protection (Video)` — full single video
+- `37-Cisco Firewall Technologies for Beginners` — full module
+- `36-Introduction To Content And Endpoint Security` — full module (NGFW/AMP/Umbrella/ESA/WSA concepts)
 
 **Note — Gaps:** MACsec/TrustSec/SGT and full L2 hardening (DHCP snooping, DAI, IPSG, port-security, storm-control, PVLAN) are not covered by either library. After the INE/CBT pass, read OCG Ch. 25 and Ch. 26 summaries for these topics.
 
@@ -323,7 +323,7 @@ You have ~2 hours on a good day, zero on a bad day. Don't fight this — design 
 - `40-Embedded Event Manager` — modules 1–16 + 47–51 (EEM applets, event detectors, action commands, syslog/CLI/timer events). Skip the middle bulk — it's advanced EEM beyond ENCOR.
 - `35-REST API Security` — modules 1–4 (API auth, tokens, rate-limiting — exam-relevant)
 
-**CBT (after INE):**
+**CBT (primary — watch first):**
 - `57-Network Programmability Foundations`
 - `58-JSON / XML / YAML`
 - `59-YANG Data Models`
@@ -332,6 +332,13 @@ You have ~2 hours on a good day, zero on a bad day. Don't fight this — design 
 - `62-Python Basics for Network Engineers`
 - `63-EEM (Embedded Event Manager)`
 - `64-Agent vs. Agentless Orchestration Tools (Ansible/Puppet/Chef/SaltStack)`
+
+**INE (after CBT — protocol depth):**
+- `39-Introducing Network Programmability & Automation` — full module (concepts: NETCONF, RESTCONF, YANG, data models, management plane evolution)
+- `31-Introducing NETCONF & RESTCONF For Enterprise Networks` — full module
+- `38-Practical Python Cisco Network Automation` — modules 1–8 (Python basics for network engineers, Netmiko, NAPALM)
+- `40-Embedded Event Manager` — modules 1–16 + 47–51 (EEM applets, event detectors, action commands)
+- `35-REST API Security` — modules 1–4 (API auth, tokens, rate-limiting)
 
 **OCG skim:** Ch. 29, 30 summaries
 
@@ -606,26 +613,32 @@ By now you have a clear picture of what didn't stick. This week:
 
 | Original plan | This plan | Why |
 |---|---|---|
-| INE as on-demand deep dive | INE as primary, watched first | You get the full technical depth before the exam-angle summary. CBT becomes consolidation, not introduction. |
+| CBT as sole spine | CBT first, INE second | CBT gives the big picture and self-check quizzes — ideal for first contact. INE goes Wireshark-deep — ideal once you have the concept framework. |
 | Labs every week from the start | Labs only in Pass 2 | Mental model comes first. Labs are dramatically more productive when you know what you're building. |
 | 10 h/week rigid schedule | Flexible — topic-based, not calendar-based | Your irregular schedule stops being a problem. If week 4 takes 10 days, nothing breaks. |
 | Anki from week 1 | Anki only in Pass 2 | Memorizing something you half-understand is inefficient. Anki works on material you've already processed. |
-| CBT as spine | INE as spine | INE is CCIE-caliber depth. CBT is ENCOR-exam caliber. For working knowledge, depth first. |
+| Single pass | Two passes | Seeing everything once at concept level, then again at depth, beats trying to go deep on first contact. |
 
 ---
 
-## Quick reference: INE modules by week
+## Quick reference: video modules by week
 
-| Pass 1 week | INE modules |
-|---|---|
-| 1 | `7` (CEF), `1` (design), `14` mod 1 |
-| 2 | `15` mods 1–12, `14` mods 8–9 |
-| 3 | `14` mods 2–7 |
-| 4 | `17` all 21 modules |
-| 5 | `18` all 7 modules |
-| 6 | `23` all, `24` PIM-SM modules |
-| 7 | `21` (FHRP), `5` mods 1–12, `6` policing/shaping |
-| 8 | `20` (NAT), `27` (SNMP/syslog), `25` mods 1–11, `29` (IP SLA) |
+| Pass 1 week | CBT modules (watch first) | INE modules (watch second) |
+|---|---|---|
+| 1 | `01`, `02`, `15` | `7` (CEF), `1` (design), `14` mod 1 |
+| 2 | `23`, `24`, `25`, `26` | `15` mods 1–12, `14` mods 8–9 |
+| 3 | `21`, `22` | `14` mods 2–7 |
+| 4 | `27`, `29`, `30`, `31`, `32`, `33` | `17` all 21 modules |
+| 5 | `34`, `35`, `36` | `18` all 7 modules |
+| 6 | `44` | `23` all, `24` PIM-SM modules |
+| 7 | `13`, `14`, `43` | `21` (FHRP), `5` mods 1–12, `6` policing/shaping |
+| 8 | `41`, `42`, `45`, `46`, `48` | `20` (NAT), `27` (SNMP/syslog), `25` mods 1–11, `29` (IP SLA) |
+| 9 | `17`, `18`, `19`, `20` | `9` (VRF), `12` (IPsec), `13` mods 1–5, `11` (LISP), `10` mods 1–7 |
+| 10 | `04`, `37`, `38`, `39`, `40`, `55` | `19` all 22 modules |
+| 11 | `06`–`12` | `2` (SD-WAN intro), `3` mods 1–12 |
+| 12 | `47`, `49`, `50` | `25` mods 7–11, `28` (SPAN), `27` SNMP v3, `26` (RMON) |
+| 13 | `51`–`54`, `56` | `32` (hardening), `33` ACL, `34` (CoPP), `37` (ZBFW), `36` (endpoint) |
+| 14 | `57`–`64` | `39` (programmability), `31` (NETCONF/RESTCONF), `38` mods 1–8, `40` mods 1–16+47–51, `35` mods 1–4 |
 | 9 | `9` (VRF), `12` (IPsec), `13` mods 1–5, `11` (LISP), `10` mods 1–7 |
 | 10 | `19` all 22 modules |
 | 11 | `2` (SD-WAN intro), `3` mods 1–12 |

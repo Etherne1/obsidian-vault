@@ -78,12 +78,12 @@ Without a mental map, labs are frustrating — you spend most of the time confus
 
 | Library | What it is | Role |
 |---|---|---|
-| **INE legacy CCIE** | René Molenaar's CCIE-caliber routing courses | Primary — watched first, OSPF/BGP/MPLS/security depth |
-| **CBT Nuggets ENCOR** | Jeff Kish CCNP ENCOR 350-401 (~64 modules) | Secondary — watched after INE for exam angle |
-| **CBT Nuggets ENARSI** | CCNP ENARSI 300-410 (~40 modules) | Post-ENCOR secondary |
+| **CBT Nuggets ENCOR** | Jeff Kish CCNP ENCOR 350-401 (~64 modules) | Primary — watched first. Concepts, big picture, self-check quizzes. |
+| **INE legacy CCIE** | René Molenaar's CCIE-caliber routing courses | Secondary — watched after CBT. Protocol depth, Wireshark-level detail. |
+| **CBT Nuggets ENARSI** | CCNP ENARSI 300-410 (~40 modules) | Post-ENCOR primary |
 | **CBT Nuggets ENAUTO** | DEVCOR/ENAUTO 300-435 (~21 modules) | Post-ENCOR automation track — vendor-neutral modules only |
 | **ENSLD Design** | CCNP Enterprise Design 300-420 (~27 modules) | Post-ENCOR parallel track — one module per topic |
-| **Pearson CCNP Route** | Legacy Pearson video (~11 lessons) | Tertiary fallback when INE + CBT don't click |
+| **Pearson CCNP Route** | Legacy Pearson video (~11 lessons) | Tertiary fallback when CBT + INE both don't click |
 
 If you don't own INE, substitute with: OCG cover-to-cover + Jeremy's IT Lab (free YouTube) + Kevin Wallace ENCOR. The plan still works but the depth is lower on routing topics.
 
