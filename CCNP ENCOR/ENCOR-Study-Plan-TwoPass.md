@@ -45,6 +45,29 @@ You have ~2 hours on a good day, zero on a bad day. Don't fight this — design 
 
 ---
 
+## Pre-topic self-check (do this before every Pass 1 topic)
+
+Before opening any video for a new topic, spend 5–10 minutes testing what you already know. This tells you whether to go slow and careful or fast and light — before you commit 90 minutes of video time.
+
+**How:**
+1. Open `ENCOR-Practice-Questions.md` and find that week's block.
+2. Pick 3–5 questions at random. Answer them cold — no notes, no video, no searching. Just what's already in your head.
+3. Check your answers against the file.
+
+**Score and act:**
+
+| Score | What it means | What to do |
+|---|---|---|
+| 4–5 / 5 correct | You already know this well | Skim CBT at 1.5–2× speed. Skip INE or watch only the parts that surprised you. Redirect the saved time to a weaker topic. |
+| 2–3 / 5 correct | Partial knowledge, normal gap | Watch both CBT and INE as planned, normal pace. |
+| 0–1 / 5 correct | Real gap | This is exactly what Pass 1 is for. Don't rush it — this topic may need the full 7 days or more. |
+
+**Why this works:** trying to answer first — even when you get it wrong — makes the material stick better once you do watch the video. This is the same effect behind why Anki works, just applied before you learn something instead of after.
+
+**One rule:** be honest with yourself here too. If you vaguely recognize a term but couldn't actually explain it, that's not a correct answer — count it as wrong. The whole point is finding real gaps, not confirming what you want to believe.
+
+---
+
 # PASS 1 — The Map (Weeks 1–14)
 
 **Mode:** CBT as primary. Watch the listed CBT modules first — they give you the concept, the big picture, and a quiz to self-check. Then watch the corresponding INE modules for the same topic — they go deeper into protocol mechanics and packet-level behavior. Skim the OCG chapter summary only (last section of each chapter, usually 1–2 pages). Write 3–5 bullets from memory after both videos.  

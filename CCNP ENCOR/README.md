@@ -159,6 +159,20 @@ If you have more time, don't rush Pass 1 — the two-pass structure works becaus
 
 **The one rule:** always write bullets after watching. Closing the video and writing from memory is worth more than re-watching the same content again.
 
+### Pre-topic self-check (do this before every new topic)
+
+Before opening any video, spend 5–10 minutes testing what you already know. Pull 3–5 questions at random from that topic's block in `ENCOR-Practice-Questions.md` (or `Post-ENCOR-Practice-Questions.md`) and answer them cold — no notes.
+
+| Score | What it means | What to do |
+|---|---|---|
+| 4–5/5 | You already know this | Skim CBT fast, skip or lightly watch INE, redirect the saved time elsewhere |
+| 2–3/5 | Normal gap | Watch both videos as planned |
+| 0–1/5 | Real gap | Slow down — this is exactly what Pass 1 is for |
+
+Be honest with the scoring — vaguely recognizing a term isn't a correct answer. The goal is finding real gaps, not confirming what you'd like to believe.
+
+**The one rule:** always write bullets after watching. Closing the video and writing from memory is worth more than re-watching the same content again.
+
 ---
 
 ## How a typical week looks (Pass 2)

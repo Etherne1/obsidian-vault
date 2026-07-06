@@ -45,6 +45,16 @@
 - Zero day: fine. Don't double up the next day. Resume where you left off.
 - The one rule: always write bullets after watching. Closing the video and writing from memory is worth more than re-watching.
 
+**Pre-topic self-check:** before opening any video for a new week, pull 3–5 questions at random from that week's block in `Post-ENCOR-Practice-Questions.md` and try to answer cold — no notes. Score honestly:
+
+| Score | Action |
+|---|---|
+| 4–5/5 | You know this already. Skim CBT fast, skip or lightly watch INE. Redirect time to a weaker topic. |
+| 2–3/5 | Normal gap — watch both as planned. |
+| 0–1/5 | Real gap — this is exactly what Pass 1 is for. Don't rush it. |
+
+Be honest — vaguely recognizing a term isn't a correct answer. The point is finding real gaps, not confirming what you'd like to believe.
+
 ---
 
 # PASS 1 — The Map (Weeks 1–16)
