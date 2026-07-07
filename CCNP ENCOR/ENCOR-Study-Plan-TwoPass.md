@@ -75,199 +75,28 @@ Before opening any video for a new topic, spend 5–10 minutes testing what you 
 
 ---
 
-## Phase 1 — Layer 2 Foundations (Weeks 1–3)
+## Phase 1 — Architecture (Weeks 1–2)
 
-### Week 1 — Switching architecture, packet forwarding, campus design
+### Week 1 — Enterprise design foundations, high availability, deployment models
 
 **CBT (primary — watch first):**
 - `01-Explain The Hierarchical Network Model`
 - `02-Explain Enterprise Network Design`
-- `15-Differentiate Between Switching Mechanisms`
+- `03-Describe High-Availability Techniques`
+- `05-Differentiate Between On-Premises and Cloud Deployments`
 
 **INE (after CBT — protocol depth):**
-- `7-Hardware & Software Switching Mechanisms` — `1 - Cisco Express Forwarding.mp4` (CEF, FIB, adjacency table, process vs CEF)
 - `1-Introduction to Enterprise Network Design Principles` — full single module (hierarchical model, 2-tier vs 3-tier, modular enterprise, HA design)
-- `14-LAN Switching` — `1 - LAN Switching Introduction` (how a switch works, CAM table, forwarding decisions)
 
-**OCG skim:** Ch. 1 summary + Ch. 22 summary (architecture section only)
+**Note:** Neither library has a dedicated deep-dive on StackWise/VSS/NSF-SSO beyond the CBT module. This is a small, mostly conceptual blueprint topic — the CBT module + OCG summary is enough.
 
-**Bullets to write from memory:** How CEF differs from process switching. What the FIB is and where it comes from. The three layers of the campus model and what lives at each.
+**OCG skim:** Ch. 1 summary
 
----
-
-### Week 2 — Spanning Tree Protocol
-
-**CBT (primary — watch first):**
-- `23-Fundamentals of STP`
-- `24-Customize Spanning Tree Protocol`
-- `25-Optimize with Rapid Spanning Tree`
-- `26-Configure and Verify MST`
-
-**INE (after CBT — protocol depth):**
-- `15-Routing & Switching Rapid Spanning-Tree and MST` — modules 1–12 in order. Cover: 802.1D root election, port roles/states, RSTP convergence, MST regions, IST master, virtual bridge, MST/PVST boundary.
-- `14-LAN Switching` — `8 - Spanning-Tree Protocol`, `9 - Optional Spanning-Tree Features` (PortFast, BPDU Guard, Root Guard, Loop Guard, UDLD, Backbone/UplinkFast)
-
-**OCG skim:** Ch. 2, 3, 4 summaries
-
-**Bullets to write:** Root election criteria. The difference between Root Guard and BPDU Guard (placement, what they protect against). Why MST needs a region and what happens at the boundary.
+**Bullets to write from memory:** The three layers of the campus model and what lives at each. NSF/SSO vs StackWise vs VSS — what failure scenario each solves. On-prem vs cloud — what you trade for what (control, latency, cost, elasticity).
 
 ---
 
-### Week 3 — VLANs, trunking, EtherChannel
-
-**CBT (primary — watch first):**
-- `21-Troubleshoot Static and Dynamic 802.1q Trunking Protocols`
-- `22-Troubleshooting Cisco Etherchannel and LAG Ports`
-
-**INE (after CBT — protocol depth):**
-- `14-LAN Switching` — `2 - VLANs & Trunking`, `3 - VLAN Trunking Protocol (VTP)`, `4 - VTP Version 3`, `5 - EtherChannel`, `6 - Layer 2 EtherChannel Configuration`, `7 - Layer 3 EtherChannel Configuration`
-
-**OCG skim:** Ch. 5 summary
-
-**Bullets to write:** DTP modes and when trunks form. VTP modes and the danger of VTP in production. LACP vs PAgP vs static — when each is appropriate. Why a Layer 3 port-channel matters.
-
----
-
-## Phase 2 — Layer 3: IGP, BGP, Multicast, QoS (Weeks 4–7)
-
-### Week 4 — OSPF
-
-**CBT (primary — watch first):**
-- `27-IP Routing Concepts`
-- `29-OSPF Foundation Concepts`
-- `30-Basic OSPF IPv4 Configuration`
-- `31-OSPF Summarization and Filtering`
-- `32-Configure and Verify an OSPF NSSA`
-- `33-Configure and Verify OSPFv3 with IPv6`
-
-**INE (after CBT — protocol depth):**
-- `17-OSPF` — all 21 modules, in order. Key modules: 1 (protocol overview), 3 (adjacency troubleshooting), 4 (areas and LSA types), 5–6 (network types), 8–10 (stub area types), 11–14 (NSSA deep dive), 18–20 (summarization, filtering). Modules 7 (virtual links), 15–17 (authentication) — watch but lighter pass.
-
-**OCG skim:** Ch. 8, 9, 10 summaries
-
-**Bullets to write:** LSA types 1–5 and 7 — what each contains and who generates it. When a totally-stubby area is appropriate vs plain stub. The difference between ABR summarization and ASBR summarization.
-
----
-
-### Week 5 — BGP
-
-**CBT (primary — watch first):**
-- `34-BGP Foundation Concepts`
-- `35-Basic BGP IPv4 Configuration`
-- `36-Basic BGP IPv6 Configuration`
-
-**INE (after CBT — protocol depth):**
-- `18-Core BGP` — all 7 modules: `1–2 - Core BGP Routing Part 1/2`, `3 - Applying BGP Policy`, `4–5 - NLRI Advertisement Rules Part 1/2`, `6–7 - BGP Path Selection Rules Part 1/2`.
-
-**OCG skim:** Ch. 11, 12 summaries
-
-**Note — PBR:** Neither library has a dedicated PBR module. PBR is on the ENCOR blueprint. After finishing the BGP CBT modules, read OCG Ch. 15 §"Policy-Based Routing" (about 8 pages). Write 3 bullets on it. It's a small topic but consistently appears on the exam.
-
-**Bullets to write:** The BGP best-path algorithm — the first 5 steps in order and what each checks. The difference between weight, local-preference, MED, and AS-path prepend in terms of scope (local router / AS / inter-AS). Why iBGP requires full mesh or a route reflector.
-
----
-
-### Week 6 — Multicast
-
-**CBT (primary — watch first):**
-- `44-IPv4 Multicast Fundamentals`
-
-**INE (after CBT — protocol depth):**
-- `23-Layer-2 Multicast` — full 22 modules (IGMPv1/2/3, MLD, IGMP snooping, querier election).
-- `24-L3 Multicast with PIM Sparse-Mode` — modules covering shared tree, source registration, SPT join, Auto-RP, PIM-BSR, SSM. Skip the deep MSDP/anycast RP modules — beyond ENCOR scope.
-
-**OCG skim:** Ch. 13 summary
-
-**Bullets to write:** Why PIM-SM uses a shared tree first and then switches to SPT (or doesn't). The role of the RP — what happens if it goes down. How IGMP snooping prevents multicast flooding at L2.
-
----
-
-### Week 7 — FHRP and QoS
-
-**CBT (primary — watch first):**
-- `13-Unpacking Cisco QoS Components`
-- `14-QoS Marking Strategy Deep Dive`
-- `43-Configure and Verify First Hop Redundancy Protocols (FHRP)`
-
-**INE (after CBT — protocol depth):**
-- `21-Gateway Redundancy With FHRP` — full module (HSRP, VRRP, GLBP configuration and design)
-- `5-Introduction to QoS` — modules 1–12 (QoS tools overview, MQC, classification, marking, NBAR, FIFO/WFQ/CBWFQ/LLQ). Skip modules 13–22 (WTD/WRED internals, policing math) — deeper than ENCOR needs.
-- `6-Quality of Service` — watch only the Policing and Shaping modules as a complement.
-
-**OCG skim:** Ch. 14 summary, Ch. 15 §FHRP summary
-
-**Bullets to write:** HSRP vs VRRP vs GLBP — what GLBP does that the others can't. The QoS trust boundary — what it is and where to place it. DSCP EF vs AF — what traffic each is for.
-
----
-
-## Phase 3 — Services, Overlays, Wireless (Weeks 8–10)
-
-### Week 8 — IP Services: NAT, NTP, SNMP, Syslog, NetFlow, IP SLA
-
-**CBT (primary — watch first):**
-- `41-Describe and Configure the Network Time Protocol (NTP)`
-- `42-Configure and Verify IPv4 NAT/PAT`
-- `45-Diagnose Network Problems with Ping, Traceroute, Debug, SNMP, and Syslog`
-- `46-Configure and verify NetFlow and Flexible NetFlow`
-- `48-Configure and Verify Cisco IP SLA`
-
-**INE (after CBT — protocol depth):**
-- `20-Implementing NAT For Enterprise Networks` — full module
-- `27-Network Monitoring With SNMP & SYSLOG` — full module (SNMP v2c/v3 config, syslog severity)
-- `25-Traffic Analysis with Netflow` — modules 1–11 (NetFlow versions, original config, Flexible NetFlow records/export, monitoring, sampling)
-- `29-IP Service Level Agreements (Video)` — full single module
-
-**OCG skim:** Ch. 15 summary, Ch. 24 §Tools summary
-
-**Bullets to write:** Static NAT vs dynamic NAT vs PAT — what each translates and when to use each. SNMPv3 security levels — authNoPriv vs authPriv. How IP SLA tracking can trigger a route change.
-
----
-
-### Week 9 — Overlay tunnels: VRF, GRE, IPsec, LISP, VXLAN
-
-**CBT (primary — watch first):**
-- `17-Verify Data Path Virtualization Technologies`
-- `18-Configure Data Path Virtualization Technologies`
-- `19-Describe LISP`
-- `20-Describe VXLAN`
-
-**INE (after CBT — protocol depth):**
-- `9-VRFs` — `1 - VRFs`, `2 - VRF Lite` (VRF concepts, route leaking, inter-VRF routing)
-- `12-IPsec VPNs` — full module (crypto maps, GRE over IPsec, IPsec over DMVPN, VTI, verification)
-- `13-IKEv1 IPsec VPN` — modules 1–5 (IKE phases, Phase 1 modes, Phase 2, SA establishment). Skip modules 6–8 unless IPsec lab in Pass 2 feels shaky.
-- `11-LISP` — all 5 modules (LISP overview, locator-ID separation, control/data planes, interworking with non-LISP)
-- `10-Virtual Extensible LAN (VXLAN) on Nexus NX-OS` — modules 1–7 only (Overview, Terminology, Encapsulation, Basic Workflow, Config Prerequisites, Flood & Learn).
-
-**OCG skim:** Ch. 16 summary, Ch. 23 §LISP/VXLAN summary
-
-**Bullets to write:** What problem VRF-Lite solves vs full MPLS VPN. The two IKE phases — what each negotiates. Why LISP separates locator from identifier — what breaks in traditional routing that LISP fixes.
-
----
-
-### Week 10 — Wireless
-
-**CBT (primary — watch first):**
-- `04-Analyze WLAN Design Principles`
-- `37-Describe Physical Wireless Communication`
-- `38-Describe Wireless AP Modes and Antenna Types`
-- `39-Identify Wireless Joining and Roaming Processes`
-- `40-Troubleshoot WLAN Configuration and Wireless Client Connectivity Issues`
-- `55-Configure and Verify Wireless Security Features`
-
-**INE (after CBT — protocol depth):**
-- `19-Enterprise Wireless Concepts & Implementation` — all 22 modules. Cover: RF measurement, dBm + rule of 10s/3s, 802.11 standards through 11ax, antenna types, CAPWAP, controller discovery and join, redundancy, WLAN roaming, 802.1X with EAP, web auth.
-
-**OCG skim:** Ch. 17–21 summaries (one pass through all five chapter summaries)
-
-**Note on wireless:** This is a read-heavy week — no EVE-NG lab is realistic. In Pass 2, you'll use the Cisco DevNet 9800 Always-On sandbox for one afternoon of show-command practice. For now, just understand the architecture.
-
-**Bullets to write:** CAPWAP split-MAC — what the AP handles locally vs what goes to the controller. L2 roaming vs L3 roaming — what's different. The 802.11 auth sequence: probe → auth → assoc → 802.1X/PSK.
-
----
-
-## Phase 4 — Architecture, Assurance, Security (Weeks 11–13)
-
-### Week 11 — Enterprise architecture: SD-Access, SD-WAN
+### Week 2 — SD-WAN and SD-Access
 
 **CBT (primary — watch first):**
 - `06-Explain the Principles of SD-WAN`
@@ -290,61 +119,243 @@ Before opening any video for a new topic, spend 5–10 minutes testing what you 
 
 ---
 
-### Week 12 — Network Assurance
+## Phase 2 — Virtualization (Weeks 3–4)
+
+### Week 3 — QoS, switching mechanisms, device virtualization
 
 **CBT (primary — watch first):**
+- `13-Unpacking Cisco QoS Components`
+- `14-QoS Marking Strategy Deep Dive`
+- `15-Differentiate Between Switching Mechanisms`
+- `16-Describe Device Virtualization Technologies`
+
+**INE (after CBT — protocol depth):**
+- `5-Introduction to QoS` — modules 1–12 (QoS tools overview, MQC, classification, marking, NBAR, FIFO/WFQ/CBWFQ/LLQ). Skip modules 13–22 (WTD/WRED internals, policing math) — deeper than ENCOR needs.
+- `6-Quality of Service` — watch only the Policing and Shaping modules as a complement.
+- `7-Hardware & Software Switching Mechanisms` — `1 - Cisco Express Forwarding.mp4` (CEF, FIB, adjacency table, process vs CEF)
+- `14-LAN Switching` — `1 - LAN Switching Introduction` (how a switch works, CAM table, forwarding decisions)
+
+**Note — Device virtualization:** No dedicated INE module for VDCs/hypervisor types/containers. CBT module 16 + OCG summary covers what ENCOR needs — this is conceptual, not something you'll lab.
+
+**OCG skim:** Ch. 14 summary (QoS), Ch. 1 (device virtualization, light)
+
+**Bullets to write from memory:** How CEF differs from process switching. What the FIB is and where it comes from. The QoS trust boundary — what it is and where to place it. Device virtualization — VRF vs VDC vs container, one sentence each on what's isolated.
+
+---
+
+### Week 4 — Data path virtualization: VRF, GRE, IPsec, LISP, VXLAN
+
+**CBT (primary — watch first):**
+- `17-Verify Data Path Virtualization Technologies`
+- `18-Configure Data Path Virtualization Technologies`
+- `19-Describe LISP`
+- `20-Describe VXLAN`
+
+**INE (after CBT — protocol depth):**
+- `9-VRFs` — `1 - VRFs`, `2 - VRF Lite` (VRF concepts, route leaking, inter-VRF routing)
+- `12-IPsec VPNs` — full module (crypto maps, GRE over IPsec, IPsec over DMVPN, VTI, verification)
+- `13-IKEv1 IPsec VPN` — modules 1–5 (IKE phases, Phase 1 modes, Phase 2, SA establishment). Skip modules 6–8 unless IPsec lab in Pass 2 feels shaky.
+- `11-LISP` — all 5 modules (LISP overview, locator-ID separation, control/data planes, interworking with non-LISP)
+- `10-Virtual Extensible LAN (VXLAN) on Nexus NX-OS` — modules 1–7 only (Overview, Terminology, Encapsulation, Basic Workflow, Config Prerequisites, Flood & Learn).
+
+**OCG skim:** Ch. 16 summary, Ch. 23 §LISP/VXLAN summary
+
+**Bullets to write:** What problem VRF-Lite solves vs full MPLS VPN. The two IKE phases — what each negotiates. Why LISP separates locator from identifier — what breaks in traditional routing that LISP fixes.
+
+---
+
+## Phase 3 — Infrastructure: Layer 2 (Weeks 5–6)
+
+### Week 5 — Trunking and EtherChannel
+
+**CBT (primary — watch first):**
+- `21-Troubleshoot Static and Dynamic 802.1q Trunking Protocols`
+- `22-Troubleshooting Cisco Etherchannel and LAG Ports`
+
+**INE (after CBT — protocol depth):**
+- `14-LAN Switching` — `2 - VLANs & Trunking`, `3 - VLAN Trunking Protocol (VTP)`, `4 - VTP Version 3`, `5 - EtherChannel`, `6 - Layer 2 EtherChannel Configuration`, `7 - Layer 3 EtherChannel Configuration`
+
+**OCG skim:** Ch. 5 summary
+
+**Bullets to write:** DTP modes and when trunks form. VTP modes and the danger of VTP in production. LACP vs PAgP vs static — when each is appropriate. Why a Layer 3 port-channel matters.
+
+---
+
+### Week 6 — Spanning Tree Protocol
+
+**CBT (primary — watch first):**
+- `23-Fundamentals of STP`
+- `24-Customize Spanning Tree Protocol`
+- `25-Optimize with Rapid Spanning Tree`
+- `26-Configure and Verify MST`
+
+**INE (after CBT — protocol depth):**
+- `15-Routing & Switching Rapid Spanning-Tree and MST` — modules 1–12 in order. Cover: 802.1D root election, port roles/states, RSTP convergence, MST regions, IST master, virtual bridge, MST/PVST boundary.
+- `14-LAN Switching` — `8 - Spanning-Tree Protocol`, `9 - Optional Spanning-Tree Features` (PortFast, BPDU Guard, Root Guard, Loop Guard, UDLD, Backbone/UplinkFast)
+
+**OCG skim:** Ch. 2, 3, 4 summaries
+
+**Bullets to write:** Root election criteria. The difference between Root Guard and BPDU Guard (placement, what they protect against). Why MST needs a region and what happens at the boundary.
+
+---
+
+## Phase 4 — Infrastructure: Layer 3 Routing (Weeks 7–8)
+
+### Week 7 — EIGRP review + OSPF
+
+**CBT (primary — watch first):**
+- `27-IP Routing Concepts`
+- `28-Fundamentals of EIGRP`
+- `29-OSPF Foundation Concepts`
+- `30-Basic OSPF IPv4 Configuration`
+- `31-OSPF Summarization and Filtering`
+- `32-Configure and Verify an OSPF NSSA`
+- `33-Configure and Verify OSPFv3 with IPv6`
+
+**INE (after CBT — protocol depth):**
+- `17-OSPF` — all 21 modules, in order. Key modules: 1 (protocol overview), 3 (adjacency troubleshooting), 4 (areas and LSA types), 5–6 (network types), 8–10 (stub area types), 11–14 (NSSA deep dive), 18–20 (summarization, filtering). Modules 7 (virtual links), 15–17 (authentication) — watch but lighter pass.
+
+**Note — EIGRP:** This was missing from earlier drafts of this plan. Module 28 is a CCNA-level refresher — DUAL, feasible successor, basic config. Neither INE nor CBT goes deep on EIGRP here because ENCOR only tests it at a review level; the deep EIGRP content (named-mode, SIA, stub routing) lives in the Post-ENCOR plan. Just watch the CBT module and move on — don't over-invest here.
+
+**OCG skim:** Ch. 8, 9, 10 summaries (OSPF); brief EIGRP review section if your OCG edition has one
+
+**Bullets to write from memory:** EIGRP DUAL — feasible successor in one sentence. LSA types 1–5 and 7 — what each contains and who generates it. When a totally-stubby area is appropriate vs plain stub. The difference between ABR summarization and ASBR summarization.
+
+---
+
+### Week 8 — BGP
+
+**CBT (primary — watch first):**
+- `34-BGP Foundation Concepts`
+- `35-Basic BGP IPv4 Configuration`
+- `36-Basic BGP IPv6 Configuration`
+
+**INE (after CBT — protocol depth):**
+- `18-Core BGP` — all 7 modules: `1–2 - Core BGP Routing Part 1/2`, `3 - Applying BGP Policy`, `4–5 - NLRI Advertisement Rules Part 1/2`, `6–7 - BGP Path Selection Rules Part 1/2`.
+
+**Note — PBR:** Neither library has a dedicated PBR module. PBR is on the ENCOR blueprint. After finishing the BGP modules, read OCG Ch. 15 §"Policy-Based Routing" (about 8 pages). Write 3 bullets on it. It's a small topic but consistently appears on the exam.
+
+**OCG skim:** Ch. 11, 12 summaries
+
+**Bullets to write:** The BGP best-path algorithm — the first 5 steps in order and what each checks. The difference between weight, local-preference, MED, and AS-path prepend in terms of scope (local router / AS / inter-AS). Why iBGP requires full mesh or a route reflector.
+
+---
+
+## Phase 5 — Infrastructure: Wireless (Week 9)
+
+### Week 9 — Wireless design and implementation
+
+**CBT (primary — watch first):**
+- `04-Analyze WLAN Design Principles`
+- `37-Describe Physical Wireless Communication`
+- `38-Describe Wireless AP Modes and Antenna Types`
+- `39-Identify Wireless Joining and Roaming Processes`
+- `40-Troubleshoot WLAN Configuration and Wireless Client Connectivity Issues`
+
+**INE (after CBT — protocol depth):**
+- `19-Enterprise Wireless Concepts & Implementation` — all 22 modules. Cover: RF measurement, dBm + rule of 10s/3s, 802.11 standards through 11ax, antenna types, CAPWAP, controller discovery and join, redundancy, WLAN roaming, 802.1X with EAP, web auth.
+
+**Note:** module `04` sits in the Architecture domain by CBT numbering, but it's kept here with the implementation modules — wireless design and wireless operation are one coherent subject to learn, even though the exam blueprint splits them across domains.
+
+**OCG skim:** Ch. 17–21 summaries (one pass through all five chapter summaries)
+
+**Note on wireless:** This is a read-heavy week — no EVE-NG lab is realistic. In Pass 2, you'll use the Cisco DevNet 9800 Always-On sandbox for one afternoon of show-command practice. For now, just understand the architecture.
+
+**Bullets to write:** CAPWAP split-MAC — what the AP handles locally vs what goes to the controller. L2 roaming vs L3 roaming — what's different. The 802.11 auth sequence: probe → auth → assoc → 802.1X/PSK.
+
+---
+
+## Phase 6 — Infrastructure: Services, FHRP, Multicast (Week 10)
+
+### Week 10 — NTP, NAT, FHRP, Multicast
+
+**CBT (primary — watch first):**
+- `41-Describe and Configure the Network Time Protocol (NTP)`
+- `42-Configure and Verify IPv4 NAT/PAT`
+- `43-Configure and Verify First Hop Redundancy Protocols (FHRP)`
+- `44-IPv4 Multicast Fundamentals`
+
+**INE (after CBT — protocol depth):**
+- `21-Gateway Redundancy With FHRP` — full module (HSRP, VRRP, GLBP configuration and design)
+- `20-Implementing NAT For Enterprise Networks` — full module
+- `23-Layer-2 Multicast` — full 22 modules (IGMPv1/2/3, MLD, IGMP snooping, querier election)
+- `24-L3 Multicast with PIM Sparse-Mode` — modules covering shared tree, source registration, SPT join, Auto-RP, PIM-BSR, SSM. Skip the deep MSDP/anycast RP modules — beyond ENCOR scope.
+
+**OCG skim:** Ch. 13 summary (multicast), Ch. 14/15 §FHRP and NAT summaries
+
+**Bullets to write:** HSRP vs VRRP vs GLBP — what GLBP does that the others can't. Static NAT vs dynamic NAT vs PAT — what each translates and when to use each. Why PIM-SM uses a shared tree first and then switches to SPT (or doesn't). The role of the RP — what happens if it goes down.
+
+---
+
+## Phase 7 — Infrastructure: Monitoring and Assurance Tools (Week 11)
+
+### Week 11 — Troubleshooting tools, NetFlow, SPAN, IP SLA, DNA Center
+
+**CBT (primary — watch first):**
+- `45-Diagnose Network Problems with Ping, Traceroute, Debug, SNMP, and Syslog`
+- `46-Configure and verify NetFlow and Flexible NetFlow`
 - `47-Configure and verify SPAN-RSPAN-ERSPAN`
-- `49-Configure Enterprise Campuses with DNA Center Workflows` (Assurance section)
+- `48-Configure and Verify Cisco IP SLA`
+- `49-Configure Enterprise Campuses with DNA Center Workflows`
 - `50-DNA Center Assurance & Telemetry`
 
 **INE (after CBT — protocol depth):**
-- `25-Traffic Analysis with Netflow` — re-watch modules 7–11 (Flexible NetFlow focus — records, exporters, monitors, cache analysis)
+- `27-Network Monitoring With SNMP & SYSLOG` — full module (SNMP v2c/v3 config, syslog severity)
+- `25-Traffic Analysis with Netflow` — modules 1–11 (NetFlow versions, original config, Flexible NetFlow records/export, monitoring, sampling)
 - `28-Traffic Monitoring with SPAN (Webinar)` — full single webinar (SPAN/RSPAN/ERSPAN config and limitations)
-- `27-Network Monitoring With SNMP & SYSLOG` — re-watch the SNMP v3 modules as a refresher
+- `29-IP Service Level Agreements (Video)` — full single module
 - `26-Working With RMON (Video)` — single video, light pass (RMON is legacy but exam-eligible)
 
 **OCG skim:** Ch. 24 summary
 
-**Note — MDT/gNMI:** Neither library covers model-driven telemetry. After the CBT modules, read OCG Ch. 24 §"Model-Driven Telemetry" (about 6 pages). Write 3 bullets. It shows up on the exam.
-
-**Bullets to write:** SPAN vs RSPAN vs ERSPAN — what each can do that the others can't. The difference between NetFlow original and Flexible NetFlow (what you define vs what's fixed). What model-driven telemetry solves that SNMP polling doesn't.
+**Bullets to write:** SNMPv3 security levels — authNoPriv vs authPriv. NetFlow original vs Flexible NetFlow — what you define vs what's fixed. SPAN vs RSPAN vs ERSPAN — what each can do that the others can't. What DNA Center assurance adds over raw CLI tools. How IP SLA tracking can trigger a route change.
 
 ---
 
-### Week 13 — Security
+## Phase 8 — Security (Weeks 12–13)
+
+### Week 12 — Device access control, ACLs, CoPP
 
 **CBT (primary — watch first):**
 - `51-Configure and Verify Device Access Control`
 - `52-Configure and Verify Access Control Lists`
 - `53-Configure and Verify Control Plane Policing (CoPP)`
-- `54-Zone-Based Firewall (ZBFW)`
-- `56-Next-Gen Security (NGFW, NGIPS, AMP, Umbrella, ESA, WSA)`
 
 **INE (after CBT — protocol depth):**
-- `32-Hardening Cisco IOS` — all 9 modules (device architecture, secure management, AAA framework, SNMP/NTP/logging hardening, control-plane security, CoPPr, uRPF)
+- `32-Hardening Cisco IOS` — full module (device architecture, secure management, AAA framework, SNMP/NTP/logging hardening, control-plane security, CoPPr, uRPF)
 - `33-Access-Lists Beyond the Basic and Extended` — reflexive ACLs, dynamic ACLs, object groups, time-based ACLs, logging
 - `34-Control Plane Policing & Protection (Video)` — full single video
-- `37-Cisco Firewall Technologies for Beginners` — full module
-- `36-Introduction To Content And Endpoint Security` — full module (NGFW/AMP/Umbrella/ESA/WSA concepts)
 
-**Note — Gaps:** MACsec/TrustSec/SGT and full L2 hardening (DHCP snooping, DAI, IPSG, port-security, storm-control, PVLAN) are not covered by either library. After the INE/CBT pass, read OCG Ch. 25 and Ch. 26 summaries for these topics.
+**OCG skim:** Ch. 25, 26 summaries
 
-**OCG skim:** Ch. 25, 26, 27, 28 summaries
-
-**Bullets to write:** The AAA framework — authentication vs authorization vs accounting, and where TACACS+ differs from RADIUS in terms of what it encrypts. CoPP placement — where on a router it sits and what it protects. ZBF zone pairs — why self zone matters.
+**Bullets to write:** The AAA framework — authentication vs authorization vs accounting, and where TACACS+ differs from RADIUS in terms of what it encrypts. CoPP placement — where on a router it sits and what it protects.
 
 ---
 
-## Phase 5 — Automation (Week 14)
+### Week 13 — Zone-based firewall, wireless security, endpoint security
+
+**CBT (primary — watch first):**
+- `54-Zone-Based Firewall (ZBFW)`
+- `55-Configure and Verify Wireless Security Features`
+- `56-Next-Gen Security (NGFW, NGIPS, AMP, Umbrella, ESA, WSA)`
+
+**INE (after CBT — protocol depth):**
+- `37-Cisco Firewall Technologies for Beginners` — full module
+- `36-Introduction To Content And Endpoint Security` — full module (NGFW/AMP/Umbrella/ESA/WSA concepts)
+
+**Note — wireless security:** No dedicated INE module. The CBT module plus your Week 9 notes on 802.1X/EAP from INE `19-Enterprise Wireless` cover what ENCOR needs.
+
+**Note — Gaps:** MACsec/TrustSec/SGT and full L2 hardening (DHCP snooping, DAI, IPSG, port-security, storm-control, PVLAN) are not covered by either library. Read OCG Ch. 27, 28 summaries for these topics.
+
+**OCG skim:** Ch. 27, 28 summaries
+
+**Bullets to write:** ZBF zone pairs — why self zone matters. Wireless security methods — WPA2/3-Enterprise vs PSK, what 802.1X adds. NGFW/AMP/Umbrella/ESA/WSA — one sentence on what problem each solves.
+
+---
+
+## Phase 9 — Automation (Week 14)
 
 ### Week 14 — Automation, programmability, Python, EEM
-
-**INE (primary):**
-- `39-Introducing Network Programmability & Automation` — full module (concepts: NETCONF, RESTCONF, YANG, data models, management plane evolution)
-- `31-Introducing NETCONF & RESTCONF For Enterprise Networks` — full module. Best NETCONF/RESTCONF deep dive in either library.
-- `38-Practical Python Cisco Network Automation` — modules 1–8 (Python basics for network engineers, Netmiko, NAPALM — enough for ENCOR scope). Modules 9–15 are post-ENCOR depth.
-- `40-Embedded Event Manager` — modules 1–16 + 47–51 (EEM applets, event detectors, action commands, syslog/CLI/timer events). Skip the middle bulk — it's advanced EEM beyond ENCOR.
-- `35-REST API Security` — modules 1–4 (API auth, tokens, rate-limiting — exam-relevant)
 
 **CBT (primary — watch first):**
 - `57-Network Programmability Foundations`
@@ -359,9 +370,9 @@ Before opening any video for a new topic, spend 5–10 minutes testing what you 
 **INE (after CBT — protocol depth):**
 - `39-Introducing Network Programmability & Automation` — full module (concepts: NETCONF, RESTCONF, YANG, data models, management plane evolution)
 - `31-Introducing NETCONF & RESTCONF For Enterprise Networks` — full module
-- `38-Practical Python Cisco Network Automation` — modules 1–8 (Python basics for network engineers, Netmiko, NAPALM)
-- `40-Embedded Event Manager` — modules 1–16 + 47–51 (EEM applets, event detectors, action commands)
-- `35-REST API Security` — modules 1–4 (API auth, tokens, rate-limiting)
+- `38-Practical Python Cisco Network Automation` — modules 1–8 (Python basics for network engineers, Netmiko, NAPALM — enough for ENCOR scope). Modules 9–15 are post-ENCOR depth.
+- `40-Embedded Event Manager` — modules 1–16 + 47–51 (EEM applets, event detectors, action commands, syslog/CLI/timer events). Skip the middle bulk — it's advanced EEM beyond ENCOR.
+- `35-REST API Security` — modules 1–4 (API auth, tokens, rate-limiting — exam-relevant)
 
 **OCG skim:** Ch. 29, 30 summaries
 
@@ -641,30 +652,25 @@ By now you have a clear picture of what didn't stick. This week:
 | 10 h/week rigid schedule | Flexible — topic-based, not calendar-based | Your irregular schedule stops being a problem. If week 4 takes 10 days, nothing breaks. |
 | Anki from week 1 | Anki only in Pass 2 | Memorizing something you half-understand is inefficient. Anki works on material you've already processed. |
 | Single pass | Two passes | Seeing everything once at concept level, then again at depth, beats trying to go deep on first contact. |
+| Thematic week grouping (my first draft) | Native CBT order — follows the official ENCOR blueprint domain sequence | Architecture → Virtualization → Infrastructure (L2 → L3 → Wireless → Services) → Assurance → Security → Automation. This is how the course itself is structured; jumping between domains breaks the logical thread. |
 
 ---
 
 ## Quick reference: video modules by week
 
-| Pass 1 week | CBT modules (watch first) | INE modules (watch second) |
-|---|---|---|
-| 1 | `01`, `02`, `15` | `7` (CEF), `1` (design), `14` mod 1 |
-| 2 | `23`, `24`, `25`, `26` | `15` mods 1–12, `14` mods 8–9 |
-| 3 | `21`, `22` | `14` mods 2–7 |
-| 4 | `27`, `29`, `30`, `31`, `32`, `33` | `17` all 21 modules |
-| 5 | `34`, `35`, `36` | `18` all 7 modules |
-| 6 | `44` | `23` all, `24` PIM-SM modules |
-| 7 | `13`, `14`, `43` | `21` (FHRP), `5` mods 1–12, `6` policing/shaping |
-| 8 | `41`, `42`, `45`, `46`, `48` | `20` (NAT), `27` (SNMP/syslog), `25` mods 1–11, `29` (IP SLA) |
-| 9 | `17`, `18`, `19`, `20` | `9` (VRF), `12` (IPsec), `13` mods 1–5, `11` (LISP), `10` mods 1–7 |
-| 10 | `04`, `37`, `38`, `39`, `40`, `55` | `19` all 22 modules |
-| 11 | `06`–`12` | `2` (SD-WAN intro), `3` mods 1–12 |
-| 12 | `47`, `49`, `50` | `25` mods 7–11, `28` (SPAN), `27` SNMP v3, `26` (RMON) |
-| 13 | `51`–`54`, `56` | `32` (hardening), `33` ACL, `34` (CoPP), `37` (ZBFW), `36` (endpoint) |
-| 14 | `57`–`64` | `39` (programmability), `31` (NETCONF/RESTCONF), `38` mods 1–8, `40` mods 1–16+47–51, `35` mods 1–4 |
-| 9 | `9` (VRF), `12` (IPsec), `13` mods 1–5, `11` (LISP), `10` mods 1–7 |
-| 10 | `19` all 22 modules |
-| 11 | `2` (SD-WAN intro), `3` mods 1–12 |
-| 12 | `25` mods 7–11, `28` (SPAN), `27` SNMP v3, `26` (RMON) |
-| 13 | `32` (hardening), `33` advanced ACL, `34` (CoPP), `37` (ZBFW), `36` (endpoint security) |
-| 14 | `39` (programmability), `31` (NETCONF/RESTCONF), `38` mods 1–8, `40` mods 1–16+47–51, `35` mods 1–4 |
+| Week | Phase | CBT modules (watch first) | INE modules (watch second) |
+|---|---|---|---|
+| 1 | Architecture | `01`, `02`, `03`, `05` | `1` (design principles) |
+| 2 | Architecture | `06`–`12` | `2` (SD-WAN intro, 9 mods), `3` mods 1–12 |
+| 3 | Virtualization | `13`, `14`, `15`, `16` | `5` mods 1–12, `6` (policing/shaping), `7` (CEF), `14` mod 1 |
+| 4 | Virtualization | `17`, `18`, `19`, `20` | `9` (VRF), `12` (IPsec), `13` mods 1–5, `11` (LISP), `10` mods 1–7 |
+| 5 | Infrastructure L2 | `21`, `22` | `14` mods 2–7 |
+| 6 | Infrastructure L2 | `23`, `24`, `25`, `26` | `15` mods 1–12, `14` mods 8–9 |
+| 7 | Infrastructure L3 | `27`, `28`, `29`, `30`, `31`, `32`, `33` | `17` all 21 modules |
+| 8 | Infrastructure L3 | `34`, `35`, `36` | `18` all 7 modules |
+| 9 | Infrastructure Wireless | `04`, `37`, `38`, `39`, `40` | `19` all 22 modules |
+| 10 | Infrastructure Services | `41`, `42`, `43`, `44` | `21` (FHRP), `20` (NAT), `23` all, `24` (PIM-SM) |
+| 11 | Infrastructure Assurance | `45`, `46`, `47`, `48`, `49`, `50` | `27` (SNMP/syslog), `25` mods 1–11, `28` (SPAN), `29` (IP SLA), `26` (RMON) |
+| 12 | Security | `51`, `52`, `53` | `32` (hardening), `33` (ACL), `34` (CoPP) |
+| 13 | Security | `54`, `55`, `56` | `37` (ZBFW), `36` (endpoint security) |
+| 14 | Automation | `57`–`64` | `39` (programmability), `31` (NETCONF/RESTCONF), `38` mods 1–8, `40` mods 1–16+47–51, `35` mods 1–4 |

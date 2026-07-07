@@ -18,30 +18,30 @@ Pass 2 is where the detailed tracking happens — labs, notes, Anki, confidence.
 
 Update when you finish each week's INE + CBT viewing.
 
-| Week | Topic | INE watched | CBT watched | OCG skimmed | 5 bullets written |
+| Week | Topic | CBT watched | INE watched | OCG skimmed | 5 bullets written |
 |---|---|---|---|---|---|
-| 1 | Switching architecture + campus design | ☐ | ☐ | ☐ | ☐ |
-| 2 | Spanning Tree Protocol | ☐ | ☐ | ☐ | ☐ |
-| 3 | VLANs, trunking, EtherChannel | ☐ | ☐ | ☐ | ☐ |
-| 4 | OSPF | ☐ | ☐ | ☐ | ☐ |
-| 5 | BGP | ☐ | ☐ | ☐ | ☐ |
-| 6 | Multicast | ☐ | ☐ | ☐ | ☐ |
-| 7 | FHRP + QoS | ☐ | ☐ | ☐ | ☐ |
-| 8 | IP Services (NAT, NTP, SNMP, IP SLA) | ☐ | ☐ | ☐ | ☐ |
-| 9 | Overlays (VRF, GRE, IPsec, LISP, VXLAN) | ☐ | ☐ | ☐ | ☐ |
-| 10 | Wireless | ☐ | ☐ | ☐ | ☐ |
-| 11 | SD-Access + SD-WAN | ☐ | ☐ | ☐ | ☐ |
-| 12 | Network Assurance | ☐ | ☐ | ☐ | ☐ |
-| 13 | Security | ☐ | ☐ | ☐ | ☐ |
+| 1 | Enterprise design, HA, deployment models | ☐ | ☐ | ☐ | ☐ |
+| 2 | SD-WAN + SD-Access | ☐ | ☐ | ☐ | ☐ |
+| 3 | QoS, switching mechanisms, device virtualization | ☐ | ☐ | ☐ | ☐ |
+| 4 | Data path virtualization (VRF, GRE, IPsec, LISP, VXLAN) | ☐ | ☐ | ☐ | ☐ |
+| 5 | Trunking + EtherChannel | ☐ | ☐ | ☐ | ☐ |
+| 6 | Spanning Tree Protocol | ☐ | ☐ | ☐ | ☐ |
+| 7 | EIGRP review + OSPF | ☐ | ☐ | ☐ | ☐ |
+| 8 | BGP | ☐ | ☐ | ☐ | ☐ |
+| 9 | Wireless design + implementation | ☐ | ☐ | ☐ | ☐ |
+| 10 | NTP, NAT, FHRP, Multicast | ☐ | ☐ | ☐ | ☐ |
+| 11 | Monitoring tools, NetFlow, SPAN, IP SLA, DNA Center | ☐ | ☐ | ☐ | ☐ |
+| 12 | Device access control, ACLs, CoPP | ☐ | ☐ | ☐ | ☐ |
+| 13 | ZBFW, wireless security, endpoint security | ☐ | ☐ | ☐ | ☐ |
 | 14 | Automation + Programmability | ☐ | ☐ | ☐ | ☐ |
 
 **Pass 1 complete when:** 80%+ of topics can be explained in 2 minutes without notes. Write weak topics below before starting Pass 2.
 
 **Weak topics from Pass 1 (fill in before Pass 2):**
 ```
-Week 4 OSPF: 
-Week 5 BGP: 
-Week 9 Overlays: 
+Week 7 OSPF/EIGRP: 
+Week 8 BGP: 
+Week 4 Overlays: 
 Other: 
 ```
 
