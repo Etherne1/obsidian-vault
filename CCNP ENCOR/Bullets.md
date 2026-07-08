@@ -1,11 +1,8 @@
 ## Week 1 Architecture
-**Bullets to write from memory:** 
-
-1. 
-2. 
 
 #### 1. The three layers of the campus model and what lives at each.
-    **Access**.
+
+**Access**.
     Switches that uses to connect of all endpoint devices like PC, wireless AP, printers, IP phones. Usually works as pure L2, but in modern networks often L3. There are better no to connect access switches with each other, only to Distribution level switches(usually to more than 1).
     
 **Distribution(aggregation)**.
