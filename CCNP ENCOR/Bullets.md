@@ -1,4 +1,4 @@
-## Week 1 Architecture##
+## Week 1 Architecture
 **Bullets to write from memory:** 
 1. The three layers of the campus model and what lives at each.
 2. NSF/SSO vs StackWise vs VSS — what failure scenario each solves.
