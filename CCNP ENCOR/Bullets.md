@@ -18,6 +18,7 @@ Answers:
     Precursor to StackWise Virtual — roughly the same concept, but one is legacy and the other is modern.    
     Pros:
     -  Uses standard Ethernet cables (copper or fiber).
+    
     Cons:
     - Only 2 devices per stack.    
     - Unlike regular StackWise, the data plane is separate — so to build a LAG using interfaces from different switches in the "stack," a mechanism called Multichassis EtherChannel (MEC) is required.
