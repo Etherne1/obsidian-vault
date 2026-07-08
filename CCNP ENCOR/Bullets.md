@@ -15,9 +15,10 @@ Answers:
    StackWise.
     Connecting few switches by a special stack cables to turn them into 1 stacked switch. Can be used to combine up to 8 switches(model depended). Cons: all control plane managed by a Master(active) switch, so there is the one point of failure. Also often this means that management can be as laggy as the the stack getting larger(but this is not affect the data plane). Cables are very short so all the stack have to be in 1 place.
    VSS – Virtual Switching System
-    Precursor to StackWise Virtual — roughly the same concept, but one is legacy and the other is modern.
-   **Pros:** Uses standard Ethernet cables (copper or fiber).
-**Cons:**
+    Precursor to StackWise Virtual — roughly the same concept, but one is legacy and the other is modern.    
+   Pros:
+    Uses standard Ethernet cables (copper or fiber).
+   Cons:
 - Only 2 devices per stack.    
 - Unlike regular StackWise, the data plane is separate — so to build a LAG using interfaces from different switches in the "stack," a mechanism called Multichassis EtherChannel (MEC) is required.
    
