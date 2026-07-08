@@ -5,9 +5,12 @@
 3. On-prem vs cloud — what you trade for what (control, latency, cost, elasticity).
 
 **Answers:**
-1.  Access - switches that uses to connect of all endpoint devices like PC, wireless AP, printers, IP phones. Usually works as pure L2, but in modern networks often L3. There are better no to connect access switches with each other, only to Distribution level switches(usually to more than 1).
-    Distribution(aggregation) - laying between Access and Core. Responsible for fast and reliable transmission of traffic between all the other levels(or blocks), ACL, route summarization towards the Core). Usually uses L3(especially in the modern networks). The best practice is to connect to other distribution and core with a LAG. To this level connects all other blocks, like a WAN, server aggregation, etc.
-   **Core** - uses to manage traffic between the uplinks and our network as fast as possible. All the functions of other layers should be excluded from Core.
+1.  **Access**.
+    Switches that uses to connect of all endpoint devices like PC, wireless AP, printers, IP phones. Usually works as pure L2, but in modern networks often L3. There are better no to connect access switches with each other, only to Distribution level switches(usually to more than 1).
+**Distribution(aggregation)**.
+    Laying between Access and Core.  Responsible for fast and reliable transmission of traffic between all the other levels(or blocks), ACL, route summarization towards the Core). Usually uses L3(especially in the modern networks). The best practice is to connect to other distribution and core with a LAG. To this level connects all other blocks, like a WAN, server aggregation, etc.
+**Core**.
+    Uses to manage traffic between the uplinks and our network as fast as possible. All the functions of other layers should be excluded from Core.
 2. **SSO - Stateful Switchover**. 
     Hot‑standby mechanism that keeps the control plane in sync between an active and a backup RP (or between two redundant switches/routers). The control‑plane state is replicated from the active to the backup RP. If the active RP goes down, the backup takes over in a few seconds, without resetting the line cards.
     
