@@ -31,4 +31,17 @@
     - Unlike regular StackWise, the data plane is separate — so to build a LAG using interfaces from different switches in the "stack," a mechanism called Multichassis EtherChannel (MEC) is required.
    
 ### 3. On-prem vs cloud — what you trade for what (control, latency, cost, elasticity).
-  
+
+**On-prem** 
+Pros: 
+ - Total control - the physical infrastructure itself and all the software running on this hardware. 
+ - 
+Drawback:
+ - Complexity - we have to think about our resources and scalability, backups, update, about anything and we need specialists in every topic to maintain it.
+
+**Cloud**
+Pros: 
+- elasticity is one of the requirements of clouds and especially when we use some public cloud, not out private cloud, we shouldn't think about such things as storage or CPU upgrade
+Cons:
+- usually there should be cost, but this is not that simple and if we use some public cloud, we can dynamically change the resource pool based on our current need, so in the real life it actually can be cheaper, especially if we need a small bunch of resources(less stuff to maintain, no expensive hardware)
+- In most scenarios latency will be higher, due to the added scheme complexity and the physical distance between the user and the cloud provider. However, there are exceptions — such as CDNs and cached content — where latency can actually be lower.
