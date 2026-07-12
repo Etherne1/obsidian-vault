@@ -22,7 +22,7 @@
     
    **StackWise**.
     Connecting few switches by a special stack cables to turn them into 1 stacked switch. Can be used to combine up to 8 switches(model depended). 
-    Cons: all control plane managed by a Master(active) switch, so there is the one point of failure. Also often this means that management can be as laggy as the the stack getting larger(but this is not affect the data plane). Cables are very short so all the stack have to be in 1 place.
+    Cons: all control plane managed by a Master(active) switch, so there is the one point of failure. Also often this means that management can be as laggy as the the stack getting larger(but this is not affect the data plane). Cables are very short so all the stack have to be in 1 place.    
     It solves: we can made redundant topology without loops, or to extend interface budget.
     
     
