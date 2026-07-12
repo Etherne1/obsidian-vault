@@ -26,7 +26,7 @@ It solves: With NSF, the line cards keep forwarding traffic using their existing
     Connecting few switches by a special stack cables to turn them into 1 stacked switch. Can be used to combine up to 8 switches(model depended). 
     Cons: all control plane managed by a Master(active) switch, so there is the one point of failure. Also often this means that management can be as laggy as the the stack getting larger(but this is not affect the data plane). Cables are very short so all the stack have to be in 1 place.    
     
-It solves: we can made redundant topology without loops, or to extend interface budget.
+**It solves:** losing an entire physical switch/board within the stack — traffic keeps flowing because a cross-member LAG is treated as one logical link on one logical switch (no STP blocking to begin with), and stack membership re-elects a new master automatically if the active one fails.
     
     
    **VSS – Virtual Switching System**.
@@ -37,7 +37,7 @@ It solves: we can made redundant topology without loops, or to extend interface 
     - Only 2 devices per stack.    
     - Unlike regular StackWise, the data plane is separate — so to build a LAG using interfaces from different switches in the "stack," a mechanism called Multi-chassis EtherChannel (MEC) is required.
     
- It solves: the same as StackWise.
+It solves: the same as StackWise, but we can separate the stacked devices across different locations, so an outage affecting an entire rack won't take down the other switch in the pair — unlike StackWise."
    
 ### 3. On-prem vs cloud — what you trade for what (control, latency, cost, elasticity).
 
