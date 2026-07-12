@@ -32,8 +32,9 @@
     -  Uses standard Ethernet cables (copper or fiber).    
     Cons:
     - Only 2 devices per stack.    
-    - Unlike regular StackWise, the data plane is separate — so to build a LAG using interfaces from different switches in the "stack," a mechanism called Multichassis EtherChannel (MEC) is required.
-    It solves: the same as StackWise.
+    - Unlike regular StackWise, the data plane is separate — so to build a LAG using interfaces from different switches in the "stack," a mechanism called Multi-chassis EtherChannel (MEC) is required.
+    
+ It solves: the same as StackWise.
    
 ### 3. On-prem vs cloud — what you trade for what (control, latency, cost, elasticity).
 
