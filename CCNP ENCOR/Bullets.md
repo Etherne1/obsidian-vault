@@ -13,17 +13,20 @@
     
 ### 2.  NSF/SSO vs StackWise vs VSS — what failure scenario each solves.
 **SSO - Stateful Switchover**. 
-    Hot‑standby mechanism that keeps the control plane in sync between an active and a backup RP (or between two redundant switches/routers). The control‑plane state is replicated from the active to the backup RP. 
-    It solves: If the active RP goes down, the backup takes over in a few seconds, without resetting the line cards.
+    Hot‑standby mechanism that keeps the control plane in sync between an active and a backup RP (or between two redundant switches/routers). The control‑plane state is replicated from the active to the backup RP.
+    
+It solves: If the active RP goes down, the backup takes over in a few seconds, without resetting the line cards.
     
    **NSF - Non Stop Forwarding**.
     Works together with SSO and protects routing sessions during a switchover. Even if the outage is resolved very quickly by SSO, routing protocols could still reset peering. 
-    It solves: With NSF, the line cards keep forwarding traffic using their existing CEF/FIB entries while the new RP rebuilds the routing table from neighbors, so routing sessions stay up instead of resetting.
+    
+It solves: With NSF, the line cards keep forwarding traffic using their existing CEF/FIB entries while the new RP rebuilds the routing table from neighbors, so routing sessions stay up instead of resetting.
     
    **StackWise**.
     Connecting few switches by a special stack cables to turn them into 1 stacked switch. Can be used to combine up to 8 switches(model depended). 
     Cons: all control plane managed by a Master(active) switch, so there is the one point of failure. Also often this means that management can be as laggy as the the stack getting larger(but this is not affect the data plane). Cables are very short so all the stack have to be in 1 place.    
-    It solves: we can made redundant topology without loops, or to extend interface budget.
+    
+It solves: we can made redundant topology without loops, or to extend interface budget.
     
     
    **VSS – Virtual Switching System**.
