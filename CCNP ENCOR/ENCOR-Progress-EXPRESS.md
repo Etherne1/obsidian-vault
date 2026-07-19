@@ -14,7 +14,7 @@ Companion: `ENCOR-EXPRESS-Plan.md`.
 - [x] CBT 03 High-Availability Techniques
 - [x] CBT 05 On-Prem vs Cloud
 - [x] INE 1 Design Principles
-- [ ] OCG Ch.1 summary
+- [x] OCG Ch.1 summary
 - [ ] Lab: build 3-tier baseline topology from scratch, no starter config
 - [ ] Lab: NSF/SSO failover demo OR VSS/StackWise config review
 - [ ] Notes: bullets written
