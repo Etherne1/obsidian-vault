@@ -1,4 +1,4 @@
-# ENCOR 350-401 — EXPRESS Plan
+# ENCOR 350-401 — EXPRESS Plan (v2)
 
 **⚠️ EXPRESS/compressed version — accelerated job-readiness only.**
 **Full version:** `ENCOR-Study-Plan-TwoPass.md` (24–26 weeks, both passes, all domains).
@@ -8,13 +8,13 @@
 **Full depth:** Architecture/Design, OSPF, BGP, Security.
 **Brief/overview only:** VXLAN.
 **Video spine:** same as main plan — CBT Nuggets first (concepts), INE second (protocol depth). Labs from GNS3vault archive where available; hands-on build for Architecture where no GNS3vault lab exists.
-**Time budget:** ~35h theory (CBT+INE+OCG) + ~20h labs = ~55h.
+**Time budget:** ~35h theory (CBT+INE+OCG) + ~19h labs = ~54h.
 
-**Lab platform note (applies throughout):** EVE-NG with vIOS-L2, vIOS-L3, CSR1000v — single-RP virtual images. Any task requiring dual-supervisor hardware (live NSF/SSO switchover, true VSS/StackWise stacking, MACsec) is NOT achievable here. Where this applies, the task below is explicitly marked syntax/concept-only — don't spend time trying to force a live demo that the platform can't support.
+**Lab platform note (applies throughout):** EVE-NG with vIOS-L2, vIOS-L3, CSR1000v — single-RP virtual images. Any task requiring dual-supervisor hardware (live NSF/SSO switchover, true VSS/StackWise stacking, MACsec) is NOT achievable here. Where this applies, the task below is explicitly marked read-only/concept-only — don't spend time trying to force a live demo the platform can't support.
 
 ---
 
-## Block 1 — Architecture & Design (~5h theory + 4h hands-on)
+## Block 1 — Architecture & Design (~5h theory + 3h hands-on)
 
 **CBT (primary — watch first):**
 - `01-Explain The Hierarchical Network Model`
@@ -25,16 +25,33 @@
 **INE (after CBT):**
 - `1-Introduction to Enterprise Network Design Principles` — full single module
 
-**Note:** NSF/SSO vs StackWise vs VSS is CBT module `03` + your own notes — you've already got this solid, treat as review only (~1h).
+**Note:** NSF/SSO vs StackWise vs VSS is CBT module `03` + your own notes — you've already got this solid, treat as review only.
 
 **OCG skim:** Ch. 1 summary
 
 **Hands-on (no GNS3vault lab exists for this topic — build these yourself):**
-1. 3-tier campus baseline — build from scratch, no starter config (2h). Just the topology: access/distribution/core tiers, redundant links between tiers. No IP addressing, no protocol config yet — that comes in later blocks/labs.
-2. NSF/SSO + VSS/StackWise config syntax review (2h) — reuse the topology from task 1, no new build needed.
-   - **NSF/SSO:** apply on your core-tier pair (e.g. `core-1`/`core-2`). Commands: `redundancy`, `mode sso`, `main-cpu`, `nsf enable`. Verify with `show redundancy states` — it will show single-RP since EVE-NG can't emulate dual supervisors; that's expected, you're drilling syntax, not testing an actual switchover.
-   - **VSS/StackWise:** apply on your distribution-tier pair (e.g. `agg-1`/`agg-2`). Commands: `switch virtual domain <id>`, `switch virtual`, `switch 1 priority`, `switch 2 priority`. Verify with `show switch virtual`.
-   - Goal: type and recognize the commands correctly. A live failover demo is not possible on this platform — don't attempt one.
+
+1. **3-tier campus baseline** — build from scratch, no starter config (2h). Just the topology: access/distribution/core tiers, redundant links between tiers. No IP addressing, no protocol config yet — that comes in later blocks/labs.
+
+2. **NSF/SSO + VSS/StackWise — read, don't type (1h).**
+
+   **Platform reality check:** on CSR1000v/vIOS-L3 (IOS-XE), `mode sso`, `main-cpu`, `switch virtual domain`, and `nsf enable` are typically NOT exposed — these require classic IOS on chassis hardware with slot-based supervisors, which this lab kit doesn't have. Don't burn time trying to force them. If curious, a 10-min check of `show license feature` or trying a newer C8000v image *might* unlock `mode sso`/`main-cpu` on some IOS-XE builds — optional, not required.
+
+   **What you CAN actually type** on your core-tier pair (e.g. `core-1`/`core-2`): `redundancy` → `application` (redundancy groups for app-level HA, e.g. NAT stateful failover — a different mechanism than SSO) and `redundancy` → `maintenance-mode` (pulls a device out of active redundancy participation for planned work). Type both, read the `?` help output — this is your one genuine hands-on rep for this task.
+
+   **Command reference (read, since you can't type these on this platform):**
+
+   | Command | What it does |
+   |---|---|
+   | `redundancy` | Enters redundancy configuration mode — umbrella container for HA settings. |
+   | `mode sso` | Sets Stateful Switchover — standby RP mirrors active RP's state continuously, so failover is near-instant with no session loss. |
+   | `main-cpu` | Submode for primary RP behavior, e.g. `auto-sync running-config` (keeps standby's config identical to active's). |
+   | `nsf enable` | Non-Stop Forwarding — data plane keeps forwarding using the last-known routing table during an RP switchover while routing protocols reconverge. |
+   | `switch virtual domain <id>` | Groups two physical switches into one logical VSS pair, sharing a domain ID. |
+   | `switch virtual` | Confirms virtual-switch mode is active after domain config. |
+   | `switch 1/2 priority` | Sets which chassis wins the VSS active-member election. |
+
+   **Bullets to write from this table, not from typing:** What failure does NSF/SSO solve that a plain reboot doesn't? Difference between RPR, SSO, and VSS in terms of what state survives a switchover.
 
 **Bullets to write:** Three layers of the campus model. NSF/SSO vs StackWise vs VSS — failure scenario each solves. On-prem vs cloud trade-offs (control, latency, cost, elasticity).
 
@@ -138,11 +155,11 @@
 
 ---
 
-## Lab summary (~20h)
+## Lab summary (~19h)
 
 | Block | Labs | Hours |
 |---|---|---|
-| Architecture | 3-tier baseline build + NSF/SSO (core pair) + VSS/StackWise (distribution pair) syntax review | 4h |
+| Architecture | 3-tier baseline build (2h) + NSF/SSO/VSS read-and-explain, `application`/`maintenance-mode` typed (1h) | 3h |
 | OSPF | 5 GNS3vault labs + troubleshooting drill (same topology) | 4h |
 | BGP | 8 GNS3vault labs + troubleshooting drill (same topology) | 6h |
 | Security | 4 GNS3vault labs | 6h |
