@@ -18,7 +18,7 @@ Companion: `ENCOR-EXPRESS-Plan.md`.
 - [x] Lab: build 3-tier baseline topology from scratch, no starter config
 - [x] Lab: NSF/SSO failover demo OR VSS/StackWise config review
 - [x] Notes: bullets written
-Confidence: 4 /5
+Confidence: 4/5
 
 ---
 
