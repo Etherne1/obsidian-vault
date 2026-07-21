@@ -16,9 +16,9 @@ Companion: `ENCOR-EXPRESS-Plan.md`.
 - [x] INE 1 Design Principles
 - [x] OCG Ch.1 summary
 - [x] Lab: build 3-tier baseline topology from scratch, no starter config
-- [ ] Lab: NSF/SSO failover demo OR VSS/StackWise config review
-- [ ] Notes: bullets written
-Confidence: __ /5
+- [x] Lab: NSF/SSO failover demo OR VSS/StackWise config review
+- [x] Notes: bullets written
+Confidence: 4 /5
 
 ---
 
