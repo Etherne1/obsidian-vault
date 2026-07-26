@@ -24,7 +24,7 @@ Confidence: 4/5
 
 ## Block 2 — OSPF
 
-- [ ] CBT 29 OSPF Foundation Concepts
+- [x] CBT 29 OSPF Foundation Concepts
 - [ ] CBT 30 Basic OSPF IPv4 Config
 - [ ] CBT 31 OSPF Summarization/Filtering
 - [ ] CBT 32 OSPF NSSA
