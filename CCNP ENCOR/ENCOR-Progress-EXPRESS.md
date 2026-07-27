@@ -26,7 +26,7 @@ Confidence: 4/5
 
 - [x] CBT 29 OSPF Foundation Concepts
 - [ ] CBT 30 Basic OSPF IPv4 Config
-- [ ] CBT 31 OSPF Summarization/Filtering
+- [x] CBT 31 OSPF Summarization/Filtering
 - [ ] CBT 32 OSPF NSSA
 - [ ] CBT 33 OSPFv3/IPv6
 - [ ] INE 17.1 Protocol Overview
