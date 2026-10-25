@@ -33,7 +33,7 @@ Confidence: 4/5
 - [x] INE 17.3 Adjacency Troubleshooting
 - [x] INE 17.4 Areas and LSA Types
 - [x] INE 17.5-6 Network Types
-- [ ] INE 17.8-10 Stub Area Types
+- [x] INE 17.8-10 Stub Area Types
 - [ ] INE 17.11-14 NSSA
 - [ ] INE 17.18-20 Summarization/Filtering
 - [ ] OCG Ch.8-10 summaries
